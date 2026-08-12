@@ -23,16 +23,15 @@ const noteSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    thumbnail: {
+      type: String,
+      default: null,
+    },
 
     uploadedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-    },
-
-    isApproved: {
-      type: Boolean,
-      default: false,
     },
 
     isPaid: {
@@ -54,7 +53,7 @@ const noteSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Note = mongoose.model("Note", noteSchema);

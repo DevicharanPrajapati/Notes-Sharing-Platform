@@ -10,9 +10,17 @@ import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", authMiddleware, upload.single("file"), uploadNotes);
+router.post(
+  "/",
+  authMiddleware,
+  upload.fields([
+    { name: "file", maxCount: 1 },
+    { name: "thumbnail", maxCount: 1 },
+  ]),
+  uploadNotes,
+);
 
-router.get("/", authMiddleware, getNotes);
+router.get("/", getNotes);
 
 router.get("/:id", authMiddleware, getSingleNote);
 router.get("/:id/download", authMiddleware, downloadNote);
