@@ -22,9 +22,7 @@ app.use("/uploads", express.static("uploads"));
 
 // Test route
 app.get("/", (req, res) => {
-  res.json({
-    message: "Notes Platform API is running",
-  });
+  res.send("<h1>Hello <h2>")
 });
 
 //auth routes

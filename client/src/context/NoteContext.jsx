@@ -72,6 +72,7 @@ export const NoteProvider = ({ children }) => {
     }
   };
 
+
   return (
     <NoteContext.Provider
       value={{
@@ -81,6 +82,7 @@ export const NoteProvider = ({ children }) => {
         fetchNotes,
         uploadNote,
         getSingleNote,
+        
       }}
     >
       {children}

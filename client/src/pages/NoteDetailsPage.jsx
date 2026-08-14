@@ -110,6 +110,7 @@ const NoteDetailsPage = () => {
 
               <div className="mt-auto pt-8">
                 <Link
+                
                   to={`/notes/${note._id}/download`}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-indigo-700"
                 >

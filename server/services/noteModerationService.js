@@ -39,9 +39,31 @@ export const rejectNote = async (moderationId, adminId, rejectionReason) => {
     {
       status: "rejected",
       adminId,
-      rejectionReason : null,
+      rejectionReason,
       reviewedAt: new Date(),
     },
     { new: true }
   );
+};
+
+
+
+export const resetModeration = async (noteId) => {
+  return await NoteModeration.findOneAndUpdate(
+    { noteId },
+    {
+      status: "pending",
+      adminId: null,
+      rejectionReason: null,
+      reviewedAt: null,
+    },
+    { new: true },
+  );
+};
+
+
+export const deleteModeration = async (noteId) => {
+  return await NoteModeration.findOneAndDelete({
+    noteId,
+  });
 };
