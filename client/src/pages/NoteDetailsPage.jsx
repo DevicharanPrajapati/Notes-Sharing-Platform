@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, Download, FileText } from "lucide-react";
+import { ArrowLeft, Download, FileText, Eye } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useNotes } from "../context/NoteContext";
 
@@ -108,15 +108,23 @@ const NoteDetailsPage = () => {
                 {note.description || "No description available."}
               </p>
 
-              <div className="mt-auto pt-8">
+              <div className="mt-auto flex flex-col gap-3 pt-8 sm:flex-row">
                 <Link
-                
-                  to={`/notes/${note._id}/download`}
+                  to={`/notes/${note._id}/view`}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-indigo-700"
+                >
+                  <Eye size={18} />
+                  View PDF
+                </Link>
+
+                <a
+                  href={note.file}
+                  download
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-5 py-3.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
                 >
                   <Download size={18} />
                   Download Note
-                </Link>
+                </a>
               </div>
             </div>
           </div>

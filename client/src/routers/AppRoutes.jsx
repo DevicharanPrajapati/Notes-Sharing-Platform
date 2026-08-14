@@ -7,6 +7,7 @@ import Profile from "../pages/ProfilePage";
 import NotesPage from "../pages/NotesPage";
 import UploadNotePage from "../pages/UploadNotePage";
 import NoteDetailsPage from "../pages/NoteDetailsPage";
+import NotePdfViewerPage from "../pages/NotePdfViewerPage";
 
 import MainLayout from "../components/layout/MainLayout";
 import AuthLayout from "../components/layout/AuthLayout";
@@ -34,6 +35,7 @@ function AppRoutes() {
             <Route path="/notes/upload" element={<UploadNotePage />} />
             <Route path="/notes/:id" element={<NoteDetailsPage />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/notes/:id/view" element={<NotePdfViewerPage />} />
           </Route>
         </Route>
       </Routes>
