@@ -4,16 +4,18 @@ import Home from "../pages/HomePage";
 import Login from "../pages/LoginPage";
 import Register from "../pages/RegisterPage";
 import Profile from "../pages/ProfilePage";
+import NotesPage from "../pages/NotesPage";
 
 import MainLayout from "../components/layout/MainLayout";
 import AuthLayout from "../components/layout/AuthLayout";
 import ProtectedRoute from "./ProtectedRoute";
+import UploadNotePage from "../pages/UploadNotePage";
+import NoteDetailsPage from "../pages/NoteDetailsPage";
 
 function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-
         {/* Public/Auth Pages */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
@@ -30,13 +32,13 @@ function AppRoutes() {
         {/* Protected Pages */}
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>
-            {/* <Route path="/notes/upload" element={<UploadNote />} /> */}
+            <Route path="/notes/upload" element={<UploadNotePage />} />
             <Route path="/profile" element={<Profile />} />
-            {/* <Route path="/my-notes" element={<MyNotes />} /> */}
+            <Route path="/notes" element={<NotesPage />} />{" "}
+            <Route path="/notes/:id" element={<NoteDetailsPage />} />
             {/* <Route path="/saved-notes" element={<SavedNotes />} /> */}
           </Route>
         </Route>
-
       </Routes>
     </BrowserRouter>
   );

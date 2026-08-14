@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 function ProtectedRoute() {
   const { user, loading } = useAuth();
 
-  console.log("ProtectedRoute:", { user, loading });
+  // console.log("ProtectedRoute:", { user, loading });
 
   if (loading) {
     return (
