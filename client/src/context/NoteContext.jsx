@@ -73,6 +73,10 @@ export const NoteProvider = ({ children }) => {
   };
 
 
+  const getNoteViewUrl = (id) => {
+  return `${api.defaults.baseURL}/api/notes/${id}/view`;
+};
+
   return (
     <NoteContext.Provider
       value={{
@@ -82,6 +86,7 @@ export const NoteProvider = ({ children }) => {
         fetchNotes,
         uploadNote,
         getSingleNote,
+        getNoteViewUrl
         
       }}
     >
