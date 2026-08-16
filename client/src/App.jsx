@@ -1,11 +1,14 @@
+import { CategoryProvider } from "./context/CategoryContext";
 import { NoteProvider } from "./context/NoteContext";
 import AppRoutes from "./routers/AppRoutes";
 
 function App() {
   return (
-    <NoteProvider>
-      <AppRoutes />
-    </NoteProvider>
+    <CategoryProvider>
+      <NoteProvider>
+        <AppRoutes />
+      </NoteProvider>
+    </CategoryProvider>
   );
 }
 

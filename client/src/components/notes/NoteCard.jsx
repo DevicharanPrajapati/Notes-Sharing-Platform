@@ -23,10 +23,18 @@ const NoteCard = ({ note }) => {
         )}
 
         {note.subject && (
-          <div className="absolute left-4 top-4">
-            <span className="rounded-full bg-white/95 px-3 py-1.5 text-xs font-semibold text-indigo-600 shadow-sm backdrop-blur-sm">
-              {note.subject}
-            </span>
+          <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+            {note.category?.name && (
+              <span className="rounded-full bg-indigo-600/95 px-3 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-sm">
+                {note.category.name}
+              </span>
+            )}
+
+            {note.subject && (
+              <span className="rounded-full bg-white/95 px-3 py-1.5 text-xs font-semibold text-indigo-600 shadow-sm backdrop-blur-sm">
+                {note.subject}
+              </span>
+            )}
           </div>
         )}
       </div>

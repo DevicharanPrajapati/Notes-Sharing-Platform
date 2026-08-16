@@ -5,27 +5,71 @@ const NoteContext = createContext();
 
 export const NoteProvider = ({ children }) => {
   const [notes, setNotes] = useState([]);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalNotes: 0,
+    limit: 10,
+  });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchNotes = async () => {
+  // Get All Notes
+  const fetchNotes = async ({
+    category = "",
+    subject = "",
+    search = "",
+    page = 1,
+    limit = 10,
+  } = {}) => {
     try {
       setLoading(true);
       setError(null);
 
-      //Api config
-      //GetAllNotes
-      const response = await api.get("/api/notes");
+      const params = {
+        page,
+        limit,
+      };
+
+      if (category) {
+        params.category = category;
+      }
+
+      if (subject) {
+        params.subject = subject;
+      }
+
+      if (search) {
+        params.search = search;
+      }
+
+      const response = await api.get("/api/notes", {
+        params,
+      });
+
       console.log(response.data);
-      setNotes(response.data.notes);
+
+      setNotes(response.data.notes || []);
+
+      setPagination(
+        response.data.pagination || {
+          currentPage: page,
+          totalPages: 1,
+          totalNotes: response.data.notes?.length || 0,
+          limit,
+        },
+      );
     } catch (error) {
-      setError(error.response?.data?.message || "Failed to fetch notes");
+      setError(
+        error.response?.data?.message || "Failed to fetch notes",
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  //Upload Notes
+  // Upload Note
   const uploadNote = async (formData) => {
     try {
       setLoading(true);
@@ -44,7 +88,8 @@ export const NoteProvider = ({ children }) => {
 
       return response.data;
     } catch (error) {
-      const message = error.response?.data?.message || "Failed to upload note";
+      const message =
+        error.response?.data?.message || "Failed to upload note";
 
       setError(message);
       throw error;
@@ -53,7 +98,7 @@ export const NoteProvider = ({ children }) => {
     }
   };
 
-  //GetSingle Note
+  // Get Single Note
   const getSingleNote = async (id) => {
     try {
       setLoading(true);
@@ -63,7 +108,8 @@ export const NoteProvider = ({ children }) => {
 
       return response.data.note;
     } catch (error) {
-      const message = error.response?.data?.message || "Failed to fetch note";
+      const message =
+        error.response?.data?.message || "Failed to fetch note";
 
       setError(message);
       throw error;
@@ -72,22 +118,27 @@ export const NoteProvider = ({ children }) => {
     }
   };
 
-
+  // Get Note View URL
   const getNoteViewUrl = (id) => {
-  return `${api.defaults.baseURL}/api/notes/${id}/view`;
+    return `${api.defaults.baseURL}/api/notes/${id}/view`;
+  };
+
+  const getNoteDownloadUrl = (id) => {
+  return `${api.defaults.baseURL}/api/notes/${id}/download`;
 };
 
   return (
     <NoteContext.Provider
       value={{
         notes,
+        pagination,
         loading,
         error,
         fetchNotes,
         uploadNote,
         getSingleNote,
-        getNoteViewUrl
-        
+        getNoteViewUrl,
+        getNoteDownloadUrl
       }}
     >
       {children}

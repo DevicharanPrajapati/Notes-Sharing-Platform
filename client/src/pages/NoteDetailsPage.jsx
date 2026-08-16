@@ -5,8 +5,7 @@ import { useNotes } from "../context/NoteContext";
 
 const NoteDetailsPage = () => {
   const { id } = useParams();
-  const { getSingleNote, error } = useNotes();
-
+  const { getSingleNote, getNoteDownloadUrl, error } = useNotes();
   const [note, setNote] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -94,6 +93,11 @@ const NoteDetailsPage = () => {
 
             {/* Content */}
             <div className="flex flex-col p-6 sm:p-8 lg:p-10">
+              {note.category?.name && (
+                <span className="rounded-full bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white">
+                  {note.category.name}
+                </span>
+              )}
               {note.subject && (
                 <span className="w-fit rounded-full bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-600">
                   {note.subject}
@@ -118,8 +122,7 @@ const NoteDetailsPage = () => {
                 </Link>
 
                 <a
-                  href={note.file}
-                  download
+                  href={getNoteDownloadUrl(note._id)}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-5 py-3.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
                 >
                   <Download size={18} />

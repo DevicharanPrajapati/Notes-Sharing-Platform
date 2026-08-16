@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FileText,
   Image as ImageIcon,
@@ -6,21 +6,33 @@ import {
   X,
   Send,
 } from "lucide-react";
+
 import { useNotes } from "../../context/NoteContext";
+import { useCategories } from "../../context/CategoryContext";
 
 const NoteUploadForm = () => {
   const { uploadNote, loading, error } = useNotes();
+  const {
+    categories,
+    loading: categoriesLoading,
+    fetchCategories,
+  } = useCategories();
 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     subject: "",
+    category: "",
   });
 
   const [file, setFile] = useState(null);
   const [thumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState("");
   const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -76,6 +88,10 @@ const NoteUploadForm = () => {
       return;
     }
 
+    if (!formData.category) {
+      return;
+    }
+
     if (!file) {
       return;
     }
@@ -85,6 +101,7 @@ const NoteUploadForm = () => {
     data.append("title", formData.title);
     data.append("description", formData.description);
     data.append("subject", formData.subject);
+    data.append("category", formData.category);
     data.append("file", file);
 
     if (thumbnail) {
@@ -100,6 +117,7 @@ const NoteUploadForm = () => {
         title: "",
         description: "",
         subject: "",
+        category: "",
       });
 
       setFile(null);
@@ -162,6 +180,39 @@ const NoteUploadForm = () => {
           placeholder="e.g. Data Structures Notes"
           className="h-12 w-full rounded-xl border border-gray-200 px-4 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
         />
+      </div>
+
+      {/* Category */}
+      <div className="mb-5">
+        <label
+          htmlFor="category"
+          className="mb-2 block text-sm font-semibold text-gray-700"
+        >
+          Category
+        </label>
+
+        <select
+          id="category"
+          name="category"
+          value={formData.category}
+          onChange={handleChange}
+          disabled={categoriesLoading}
+          className="h-12 w-full rounded-xl border border-gray-200 bg-white px-4 text-sm text-gray-900 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:bg-gray-50"
+        >
+          <option value="">
+            {categoriesLoading
+              ? "Loading categories..."
+              : "Select a category"}
+          </option>
+
+          {categories
+            .filter((category) => category.isActive)
+            .map((category) => (
+              <option key={category._id} value={category._id}>
+                {category.name}
+              </option>
+            ))}
+        </select>
       </div>
 
       {/* Subject */}
@@ -268,7 +319,9 @@ const NoteUploadForm = () => {
       <div className="mb-8">
         <label className="mb-2 block text-sm font-semibold text-gray-700">
           Thumbnail
-          <span className="ml-2 font-normal text-gray-400">(Optional)</span>
+          <span className="ml-2 font-normal text-gray-400">
+            (Optional)
+          </span>
         </label>
 
         {!thumbnail ? (
@@ -326,7 +379,7 @@ const NoteUploadForm = () => {
       {/* Submit */}
       <button
         type="submit"
-        disabled={loading}
+        disabled={loading || categoriesLoading}
         className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {loading ? (
