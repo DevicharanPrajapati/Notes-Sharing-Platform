@@ -16,8 +16,15 @@ export const createNote = async (noteData) => {
   return note;
 };
 
-export const getAllNotes = async ({ category, subject, search } = {}) => {
-  return await Note.aggregate([
+export const getAllNotes = async ({
+  category,
+  subject,
+  search,
+  page = 1,
+  limit = 10,
+} = {}) => {
+  const skip = (page - 1) * limit;
+  const result = await Note.aggregate([
     {
       $lookup: {
         from: "notemoderations",
@@ -98,7 +105,35 @@ export const getAllNotes = async ({ category, subject, search } = {}) => {
         createdAt: -1,
       },
     },
+    {
+      $facet: {
+        notes: [
+          {
+            $skip: skip,
+          },
+          {
+            $limit: limit,
+          },
+        ],
+        total: [
+          {
+            $count: "count",
+          },
+        ],
+      },
+    },
   ]);
+  const totalNotes = result[0]?.total[0]?.count || 0;
+
+  return {
+    notes: result[0]?.notes || [],
+    pagination: {
+      page,
+      limit,
+      totalNotes,
+      totalPages: Math.ceil(totalNotes / limit),
+    },
+  };
 };
 
 export const getNotesByUser = async (userId) => {

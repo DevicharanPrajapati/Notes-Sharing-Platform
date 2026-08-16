@@ -40,15 +40,17 @@ export const uploadNotes = asyncHandler(async (req, res) => {
 });
 
 export const getNotes = asyncHandler(async (req, res) => {
-  const { category, subject, search } = req.query;
+  const { category, subject, search, page = 1, limit = 10 } = req.query;
 
-  const notes = await getAllNotes({
+  const result = await getAllNotes({
     category,
     subject,
     search,
+    page: Number(page),
+    limit: Number(limit),
   });
 
-  const notesResponse = notes.map((note) => ({
+  const notesResponse = result.notes.map((note) => ({
     ...note,
     file: fileUrl(note.file, `${req.protocol}://${req.get("host")}`),
     thumbnail: fileUrl(note.thumbnail, `${req.protocol}://${req.get("host")}`),
@@ -57,6 +59,7 @@ export const getNotes = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     notes: notesResponse,
+    pagination: result.pagination,
   });
 });
 
