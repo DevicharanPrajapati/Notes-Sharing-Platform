@@ -6,7 +6,6 @@ import categoryRoutes from "./routes/categoryRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import noteRoutes from "./routes/noteRoutes.js";
-import noteModerationRoutes from "./routes/noteModerationRoutes.js";
 import errorMiddleware from "./middleware/errorMiddleware.js";
 
 const app = express();
@@ -37,7 +36,6 @@ app.use("/api/notes", noteRoutes);
 app.use("/api/categories", categoryRoutes);
 
 //admin routes
-app.use("/api/admin/notes", noteModerationRoutes);
 app.use("/api/admin", adminRoutes);
 
 app.use(errorMiddleware);
