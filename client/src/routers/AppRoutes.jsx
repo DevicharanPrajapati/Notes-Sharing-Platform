@@ -38,9 +38,7 @@ function AppRoutes() {
             <Route path="/notes/:id" element={<NoteDetailsPage />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/my-notes/edit/:id" element={<EditNotePage />} />
-            <Route path="/my-notes" element={<MyNotesPagegit add .
-git commit -m "feat(client): add my notes management"
-git push origin main />} />
+            <Route path="/my-notes" element={<MyNotesPage />} />
 
             <Route path="/notes/:id/view" element={<NotePdfViewerPage />} />
           </Route>
