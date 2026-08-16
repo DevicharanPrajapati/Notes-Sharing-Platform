@@ -8,11 +8,14 @@ import {
   getDashboardController,
 } from "../controllers/adminController.js";
 
+import adminCategoryRoutes from "./adminCategoryRoutes.js";
+
 const router = express.Router();
 
 router.use(authMiddleware, adminMiddleware);
 router.use("/users", adminUserRoutes);
 router.use("/notes", noteModerationRoutes);
+router.use("/categories", adminCategoryRoutes);
 
 router.get("/dashboard", getDashboardController);
 
