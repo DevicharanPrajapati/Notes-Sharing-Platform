@@ -14,12 +14,13 @@ import ApiError from "../utils/ApiError.js";
 import fileUrl from "../utils/fileUrl.js";
 
 export const uploadNotes = asyncHandler(async (req, res) => {
-  const { title, description, subject } = req.body;
+  const { title, description, subject, category } = req.body;
 
   const note = await createNote({
     title,
     description,
     subject,
+    category,
     file: req.files.file[0].path,
     thumbnail: req.files.thumbnail
       ? req.files.thumbnail[0].path
