@@ -12,6 +12,8 @@ import NotePdfViewerPage from "../pages/NotePdfViewerPage";
 import MainLayout from "../components/layout/MainLayout";
 import AuthLayout from "../components/layout/AuthLayout";
 import ProtectedRoute from "./ProtectedRoute";
+import EditNotePage from "../pages/EditNotePage";
+import MyNotesPage from "../pages/MyNotesPage";
 
 function AppRoutes() {
   return (
@@ -35,6 +37,11 @@ function AppRoutes() {
             <Route path="/notes/upload" element={<UploadNotePage />} />
             <Route path="/notes/:id" element={<NoteDetailsPage />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/my-notes/edit/:id" element={<EditNotePage />} />
+            <Route path="/my-notes" element={<MyNotesPagegit add .
+git commit -m "feat(client): add my notes management"
+git push origin main />} />
+
             <Route path="/notes/:id/view" element={<NotePdfViewerPage />} />
           </Route>
         </Route>

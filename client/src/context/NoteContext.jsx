@@ -61,9 +61,7 @@ export const NoteProvider = ({ children }) => {
         },
       );
     } catch (error) {
-      setError(
-        error.response?.data?.message || "Failed to fetch notes",
-      );
+      setError(error.response?.data?.message || "Failed to fetch notes");
     } finally {
       setLoading(false);
     }
@@ -88,8 +86,7 @@ export const NoteProvider = ({ children }) => {
 
       return response.data;
     } catch (error) {
-      const message =
-        error.response?.data?.message || "Failed to upload note";
+      const message = error.response?.data?.message || "Failed to upload note";
 
       setError(message);
       throw error;
@@ -108,8 +105,7 @@ export const NoteProvider = ({ children }) => {
 
       return response.data.note;
     } catch (error) {
-      const message =
-        error.response?.data?.message || "Failed to fetch note";
+      const message = error.response?.data?.message || "Failed to fetch note";
 
       setError(message);
       throw error;
@@ -124,8 +120,71 @@ export const NoteProvider = ({ children }) => {
   };
 
   const getNoteDownloadUrl = (id) => {
-  return `${api.defaults.baseURL}/api/notes/${id}/download`;
-};
+    return `${api.defaults.baseURL}/api/notes/${id}/download`;
+  };
+
+  const fetchMyNotes = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await api.get("/api/notes/my-notes");
+
+      setNotes(response.data.notes || []);
+
+      return response.data.notes || [];
+    } catch (error) {
+      const message =
+        error.response?.data?.message || "Failed to fetch your notes";
+
+      setError(message);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateNote = async (id, formData) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await api.put(`/api/notes/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      const message = error.response?.data?.message || "Failed to update note";
+
+      setError(message);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteNote = async (id) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await api.delete(`/api/notes/${id}`);
+
+      setNotes((prevNotes) => prevNotes.filter((note) => note._id !== id));
+
+      return response.data;
+    } catch (error) {
+      const message = error.response?.data?.message || "Failed to delete note";
+
+      setError(message);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <NoteContext.Provider
@@ -138,7 +197,10 @@ export const NoteProvider = ({ children }) => {
         uploadNote,
         getSingleNote,
         getNoteViewUrl,
-        getNoteDownloadUrl
+        getNoteDownloadUrl,
+        fetchMyNotes,
+        updateNote,
+        deleteNote,
       }}
     >
       {children}
