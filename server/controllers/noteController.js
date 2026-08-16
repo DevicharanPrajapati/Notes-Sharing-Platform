@@ -22,22 +22,14 @@ export const uploadNotes = asyncHandler(async (req, res) => {
     subject,
     category,
     file: req.files.file[0].path,
-    thumbnail: req.files.thumbnail
-      ? req.files.thumbnail[0].path
-      : null,
+    thumbnail: req.files.thumbnail ? req.files.thumbnail[0].path : null,
     uploadedBy: req.user._id,
   });
 
   const noteResponse = {
     ...note.toObject(),
-    file: fileUrl(
-      note.file,
-      `${req.protocol}://${req.get("host")}`,
-    ),
-    thumbnail: fileUrl(
-      note.thumbnail,
-      `${req.protocol}://${req.get("host")}`,
-    ),
+    file: fileUrl(note.file, `${req.protocol}://${req.get("host")}`),
+    thumbnail: fileUrl(note.thumbnail, `${req.protocol}://${req.get("host")}`),
   };
 
   res.status(201).json({
@@ -48,18 +40,18 @@ export const uploadNotes = asyncHandler(async (req, res) => {
 });
 
 export const getNotes = asyncHandler(async (req, res) => {
-  const notes = await getAllNotes();
+  const { category, subject, search } = req.query;
+
+  const notes = await getAllNotes({
+    category,
+    subject,
+    search,
+  });
 
   const notesResponse = notes.map((note) => ({
     ...note,
-    file: fileUrl(
-      note.file,
-      `${req.protocol}://${req.get("host")}`,
-    ),
-    thumbnail: fileUrl(
-      note.thumbnail,
-      `${req.protocol}://${req.get("host")}`,
-    ),
+    file: fileUrl(note.file, `${req.protocol}://${req.get("host")}`),
+    thumbnail: fileUrl(note.thumbnail, `${req.protocol}://${req.get("host")}`),
   }));
 
   res.status(200).json({
@@ -73,14 +65,8 @@ export const getMyNotes = asyncHandler(async (req, res) => {
 
   const notesResponse = notes.map((note) => ({
     ...note,
-    file: fileUrl(
-      note.file,
-      `${req.protocol}://${req.get("host")}`,
-    ),
-    thumbnail: fileUrl(
-      note.thumbnail,
-      `${req.protocol}://${req.get("host")}`,
-    ),
+    file: fileUrl(note.file, `${req.protocol}://${req.get("host")}`),
+    thumbnail: fileUrl(note.thumbnail, `${req.protocol}://${req.get("host")}`),
   }));
 
   res.status(200).json({
@@ -98,14 +84,8 @@ export const getSingleNote = asyncHandler(async (req, res) => {
 
   const noteResponse = {
     ...note,
-    file: fileUrl(
-      note.file,
-      `${req.protocol}://${req.get("host")}`,
-    ),
-    thumbnail: fileUrl(
-      note.thumbnail,
-      `${req.protocol}://${req.get("host")}`,
-    ),
+    file: fileUrl(note.file, `${req.protocol}://${req.get("host")}`),
+    thumbnail: fileUrl(note.thumbnail, `${req.protocol}://${req.get("host")}`),
   };
 
   res.status(200).json({
@@ -129,12 +109,13 @@ export const downloadNote = asyncHandler(async (req, res) => {
 });
 
 export const updateNoteController = asyncHandler(async (req, res) => {
-  const { title, description, subject } = req.body;
+  const { title, description, subject, category } = req.body;
 
   const updateData = {
     title,
     description,
     subject,
+    category,
   };
 
   if (req.files?.file?.[0]) {
@@ -145,29 +126,16 @@ export const updateNoteController = asyncHandler(async (req, res) => {
     updateData.thumbnail = req.files.thumbnail[0].path;
   }
 
-  const note = await updateNote(
-    req.params.id,
-    req.user._id,
-    updateData,
-  );
+  const note = await updateNote(req.params.id, req.user._id, updateData);
 
   if (!note) {
-    throw new ApiError(
-      404,
-      "Note not found or you are not authorized",
-    );
+    throw new ApiError(404, "Note not found or you are not authorized");
   }
 
   const noteResponse = {
     ...note.toObject(),
-    file: fileUrl(
-      note.file,
-      `${req.protocol}://${req.get("host")}`,
-    ),
-    thumbnail: fileUrl(
-      note.thumbnail,
-      `${req.protocol}://${req.get("host")}`,
-    ),
+    file: fileUrl(note.file, `${req.protocol}://${req.get("host")}`),
+    thumbnail: fileUrl(note.thumbnail, `${req.protocol}://${req.get("host")}`),
   };
 
   res.status(200).json({
@@ -178,16 +146,10 @@ export const updateNoteController = asyncHandler(async (req, res) => {
 });
 
 export const deleteNoteController = asyncHandler(async (req, res) => {
-  const note = await deleteNote(
-    req.params.id,
-    req.user._id,
-  );
+  const note = await deleteNote(req.params.id, req.user._id);
 
   if (!note) {
-    throw new ApiError(
-      404,
-      "Note not found or you are not authorized",
-    );
+    throw new ApiError(404, "Note not found or you are not authorized");
   }
 
   res.status(200).json({

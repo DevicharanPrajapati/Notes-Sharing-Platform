@@ -16,7 +16,7 @@ export const createNote = async (noteData) => {
   return note;
 };
 
-export const getAllNotes = async () => {
+export const getAllNotes = async ({ category, subject, search } = {}) => {
   return await Note.aggregate([
     {
       $lookup: {
@@ -27,6 +27,57 @@ export const getAllNotes = async () => {
       },
     },
     {
+      $lookup: {
+        from: "categories",
+        localField: "category",
+        foreignField: "_id",
+        as: "category",
+      },
+    },
+    {
+      $unwind: {
+        path: "$category",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $match: {
+        ...(category && {
+          "category._id": new mongoose.Types.ObjectId(category),
+        }),
+
+        ...(subject && {
+          subject: {
+            $regex: subject,
+            $options: "i",
+          },
+        }),
+
+        ...(search && {
+          $or: [
+            {
+              title: {
+                $regex: search,
+                $options: "i",
+              },
+            },
+            {
+              description: {
+                $regex: search,
+                $options: "i",
+              },
+            },
+            {
+              subject: {
+                $regex: search,
+                $options: "i",
+              },
+            },
+          ],
+        }),
+      },
+    },
+    {
       $match: {
         "moderation.status": "approved",
       },
@@ -34,6 +85,12 @@ export const getAllNotes = async () => {
     {
       $project: {
         moderation: 0,
+        "category.description": 0,
+        "category.image": 0,
+        "category.isActive": 0,
+        "category.createdAt": 0,
+        "category.updatedAt": 0,
+        "category.__v": 0,
       },
     },
     {
@@ -60,8 +117,28 @@ export const getNotesByUser = async (userId) => {
       },
     },
     {
+      $lookup: {
+        from: "categories",
+        localField: "category",
+        foreignField: "_id",
+        as: "category",
+      },
+    },
+    {
+      $unwind: {
+        path: "$category",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
       $project: {
         moderation: 0,
+        "category.description": 0,
+        "category.image": 0,
+        "category.isActive": 0,
+        "category.createdAt": 0,
+        "category.updatedAt": 0,
+        "category.__v": 0,
       },
     },
     {
@@ -88,6 +165,20 @@ export const getNoteById = async (noteId) => {
       },
     },
     {
+      $lookup: {
+        from: "categories",
+        localField: "category",
+        foreignField: "_id",
+        as: "category",
+      },
+    },
+    {
+      $unwind: {
+        path: "$category",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
       $match: {
         "moderation.status": "approved",
       },
@@ -95,6 +186,12 @@ export const getNoteById = async (noteId) => {
     {
       $project: {
         moderation: 0,
+        "category.description": 0,
+        "category.image": 0,
+        "category.isActive": 0,
+        "category.createdAt": 0,
+        "category.updatedAt": 0,
+        "category.__v": 0,
       },
     },
   ]);
@@ -152,6 +249,7 @@ export const updateNote = async (noteId, userId, updateData) => {
     title: updateData.title,
     description: updateData.description,
     subject: updateData.subject,
+    category: updateData.category,
   };
 
   if (updateData.file) {
