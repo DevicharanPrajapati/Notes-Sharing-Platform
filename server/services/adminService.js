@@ -3,16 +3,18 @@ import Note from "../models/Note.js";
 import Category from "../models/Category.js";
 import NoteModeration from "../models/NoteModeration.js";
 
-
 export const getDashboardStats = async () => {
   const [
     totalUsers,
     totalNotes,
     totalCategories,
-    pendingNotes,
+    pendingNotesCount,
     approvedNotes,
     rejectedNotes,
     downloads,
+    recentUsers,
+    recentNotes,
+    pendingNotes,
   ] = await Promise.all([
     User.countDocuments(),
 
@@ -42,20 +44,51 @@ export const getDashboardStats = async () => {
         },
       },
     ]),
+
+    User.find().select("-passwordHash").sort({ createdAt: -1 }).limit(5),
+
+    Note.find()
+      .populate("uploadedBy", "name email")
+      .populate("category", "name slug")
+      .sort({ createdAt: -1 })
+      .limit(5),
+
+    NoteModeration.find({ status: "pending" })
+      .populate({
+        path: "noteId",
+        populate: [
+          {
+            path: "uploadedBy",
+            select: "name email",
+          },
+          {
+            path: "category",
+            select: "name slug",
+          },
+        ],
+      })
+      .sort({ createdAt: -1 })
+      .limit(5),
   ]);
 
   return {
-    totalUsers,
-    totalNotes,
-    totalCategories,
+    stats: {
+      totalUsers,
+      totalNotes,
+      totalCategories,
+      pendingNotes: pendingNotesCount,
+      approvedNotes,
+      rejectedNotes,
+      totalDownloads: downloads[0]?.total || 0,
+    },
+
+    recentUsers,
+
+    recentNotes,
+
     pendingNotes,
-    approvedNotes,
-    rejectedNotes,
-    totalDownloads: downloads[0]?.total || 0,
   };
 };
-
-
 
 export const getAllAdminNotes = async () => {
   return await Note.aggregate([
