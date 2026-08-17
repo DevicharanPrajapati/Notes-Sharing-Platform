@@ -4,6 +4,7 @@ import api from "../services/api";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -34,7 +35,9 @@ export const AuthProvider = ({ children }) => {
 
     console.log("LOGIN RESPONSE:", response.data);
 
-    setUser(response.data.data.user);
+    const loggedInUser = response.data.data.user;
+
+    setUser(loggedInUser);
 
     return response.data;
   };

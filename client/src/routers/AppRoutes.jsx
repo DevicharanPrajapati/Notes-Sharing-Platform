@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Home from "../pages/HomePage";
 import Login from "../pages/LoginPage";
@@ -14,6 +14,11 @@ import AuthLayout from "../components/layout/AuthLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import EditNotePage from "../pages/EditNotePage";
 import MyNotesPage from "../pages/MyNotesPage";
+
+import AdminLayout from "../components/layout/AdminLayout";
+import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
+import AdminRoute from "./AdminRoute";
+import AdminUsersPage from "../pages/admin/AdminUsersPage";
 
 function AppRoutes() {
   return (
@@ -41,6 +46,18 @@ function AppRoutes() {
             <Route path="/my-notes" element={<MyNotesPage />} />
 
             <Route path="/notes/:id/view" element={<NotePdfViewerPage />} />
+          </Route>
+        </Route>
+
+        <Route element={<AdminRoute />}>
+          <Route element={<AdminLayout />}>
+            <Route
+              path="/admin"
+              element={<Navigate to="/admin/dashboard" replace />}
+            />
+
+            <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+            <Route path="/admin/users" element={<AdminUsersPage />} />
           </Route>
         </Route>
       </Routes>

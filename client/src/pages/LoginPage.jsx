@@ -28,14 +28,21 @@ function Login() {
     setLoading(true);
 
     try {
-      await login(formData);
-      navigate("/");
+      const response = await login(formData);
+
+      const loggedInUser = response.data.user;
+
+      if (loggedInUser.role === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
       console.error(error);
 
       setError(
         error.response?.data?.message ||
-          "Login failed. Please check your email and password."
+          "Login failed. Please check your email and password.",
       );
     } finally {
       setLoading(false);
