@@ -165,6 +165,128 @@ export const AdminProvider = ({ children }) => {
     }
   };
 
+  const approveNote = async (noteId) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      await api.patch(`/api/admin/notes/${noteId}/approve`);
+
+      await fetchNotes();
+    } catch (error) {
+      const message = error.response?.data?.message || "Failed to approve note";
+
+      setError(message);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const rejectNote = async (noteId, rejectionReason) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      await api.patch(`/api/admin/notes/${noteId}/reject`, {
+        rejectionReason,
+      });
+
+      await fetchNotes();
+    } catch (error) {
+      const message = error.response?.data?.message || "Failed to reject note";
+
+      setError(message);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteNote = async (noteId) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      await api.delete(`/api/admin/notes/${noteId}`);
+
+      await fetchNotes();
+    } catch (error) {
+      const message = error.response?.data?.message || "Failed to delete note";
+
+      setError(message);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addCategory = async (categoryData) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await api.post("/api/admin/categories", categoryData);
+
+      await fetchCategories();
+
+      return response.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message || "Failed to create category";
+
+      setError(message);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateCategory = async (categoryId, categoryData) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await api.put(
+        `/api/admin/categories/${categoryId}`,
+        categoryData,
+      );
+
+      await fetchCategories();
+
+      return response.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message || "Failed to update category";
+
+      setError(message);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteCategory = async (categoryId) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await api.delete(`/api/admin/categories/${categoryId}`);
+
+      await fetchCategories();
+
+      return response.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message || "Failed to delete category";
+
+      setError(message);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <AdminContext.Provider
       value={{
@@ -174,6 +296,7 @@ export const AdminProvider = ({ children }) => {
         categories,
         loading,
         error,
+
         fetchDashboard,
         fetchUsers,
         fetchNotes,
@@ -183,6 +306,14 @@ export const AdminProvider = ({ children }) => {
         unbanUser,
         changeUserRole,
         deleteUser,
+
+        approveNote,
+        rejectNote,
+        deleteNote,
+
+        addCategory,
+        deleteCategory,
+        updateCategory,
       }}
     >
       {children}

@@ -1,15 +1,13 @@
-import {
-  LayoutDashboard,
-  Users,
-  FileText,
-  Folder,
-  LogOut,
-  X,
-} from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { LayoutDashboard, Users, FileText, Folder } from "lucide-react";
+
+import { LogOut } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 const AdminSidebar = () => {
-  const menuItems = [
+  const { logout } = useAuth();
+
+  const links = [
     {
       name: "Dashboard",
       path: "/admin/dashboard",
@@ -30,56 +28,52 @@ const AdminSidebar = () => {
       path: "/admin/categories",
       icon: Folder,
     },
+    {
+      name: "Profile",
+      path: "/admin/profile",
+      icon: Users,
+    },
   ];
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-gray-200 bg-white lg:block">
-      <div className="flex h-full flex-col">
-        {/* Logo */}
-        <div className="flex h-16 items-center border-b border-gray-200 px-6">
-          <h1 className="text-xl font-bold text-indigo-600">
-            NoteSharing
-          </h1>
+    <aside className="w-64 border-r border-gray-200 bg-white">
+      <div className="border-b border-gray-200 px-6 py-5">
+        <h2 className="text-lg font-bold text-gray-900">Admin Panel</h2>
 
-          <span className="ml-2 rounded-md bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-600">
-            Admin
-          </span>
-        </div>
+        <p className="mt-1 text-xs text-gray-500">NoteSharing</p>
+      </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 space-y-2 p-4">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
+      <nav className="space-y-1 p-4">
+        {links.map((link) => {
+          const Icon = link.icon;
 
-            return (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${
-                    isActive
-                      ? "bg-indigo-600 text-white"
-                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-                  }`
-                }
-              >
-                <Icon size={19} />
-                {item.name}
-              </NavLink>
-            );
-          })}
-        </nav>
-
-        {/* Bottom */}
-        <div className="border-t border-gray-200 p-4">
-          <button
-            type="button"
-            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-gray-600 transition hover:bg-red-50 hover:text-red-600"
-          >
-            <LogOut size={19} />
-            Logout
-          </button>
-        </div>
+          return (
+            <NavLink
+              key={link.path}
+              to={link.path}
+              className={({ isActive }) =>
+                `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${
+                  isActive
+                    ? "bg-indigo-50 text-indigo-600"
+                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                }`
+              }
+            >
+              <Icon size={19} />
+              {link.name}
+            </NavLink>
+          );
+        })}
+      </nav>
+      <div className="border-t border-gray-200 p-4">
+        <button
+          type="button"
+          onClick={logout}
+          className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-red-600 transition hover:bg-red-50"
+        >
+          <LogOut size={19} />
+          Logout
+        </button>
       </div>
     </aside>
   );

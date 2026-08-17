@@ -19,6 +19,9 @@ import AdminLayout from "../components/layout/AdminLayout";
 import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
 import AdminRoute from "./AdminRoute";
 import AdminUsersPage from "../pages/admin/AdminUsersPage";
+import AdminNotesPage from "../pages/admin/AdminNotesPage";
+import AdminCategoriesPage from "../pages/admin/AdminCategoriesPage";
+import AdminProfilePage from "../pages/admin/AdminProfilePage";
 
 function AppRoutes() {
   return (
@@ -58,6 +61,9 @@ function AppRoutes() {
 
             <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
             <Route path="/admin/users" element={<AdminUsersPage />} />
+            <Route path="/admin/notes" element={<AdminNotesPage />} />
+            <Route path="/admin/categories" element={<AdminCategoriesPage />} />
+            <Route path="/admin/profile" element={<AdminProfilePage />} />
           </Route>
         </Route>
       </Routes>

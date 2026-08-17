@@ -19,34 +19,30 @@ export const getPendingNotes = async () => {
     .sort({ createdAt: -1 });
 };
 
-
-export const approveNote = async (moderationId, adminId) => {
-  return await NoteModeration.findByIdAndUpdate(
-    moderationId,
+export const approveNote = async (noteId, adminId) => {
+  return await NoteModeration.findOneAndUpdate(
+    { noteId },
     {
       status: "approved",
       adminId,
       reviewedAt: new Date(),
     },
-    { new: true }
+    { new: true },
   );
 };
 
-
-export const rejectNote = async (moderationId, adminId, rejectionReason) => {
-  return await NoteModeration.findByIdAndUpdate(
-    moderationId,
+export const rejectNote = async (noteId, adminId, rejectionReason) => {
+  return await NoteModeration.findOneAndUpdate(
+    { noteId },
     {
       status: "rejected",
       adminId,
       rejectionReason,
       reviewedAt: new Date(),
     },
-    { new: true }
+    { new: true },
   );
 };
-
-
 
 export const resetModeration = async (noteId) => {
   return await NoteModeration.findOneAndUpdate(
@@ -60,7 +56,6 @@ export const resetModeration = async (noteId) => {
     { new: true },
   );
 };
-
 
 export const deleteModeration = async (noteId) => {
   return await NoteModeration.findOneAndDelete({
