@@ -5,7 +5,55 @@ export const createCategory = async (categoryData) => {
 };
 
 export const getAllCategories = async () => {
-  return await Category.find().sort({ createdAt: -1 });
+  return await Category.aggregate([
+    {
+      $match: {
+        isActive: true,
+      },
+    },
+    {
+      $lookup: {
+        from: "notes",
+        localField: "_id",
+        foreignField: "category",
+        as: "notes",
+      },
+    },
+    {
+      $lookup: {
+        from: "notemoderations",
+        localField: "notes._id",
+        foreignField: "noteId",
+        as: "moderations",
+      },
+    },
+    {
+      $addFields: {
+        notesCount: {
+          $size: {
+            $filter: {
+              input: "$moderations",
+              as: "moderation",
+              cond: {
+                $eq: ["$$moderation.status", "approved"],
+              },
+            },
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        notes: 0,
+        moderations: 0,
+      },
+    },
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+  ]);
 };
 
 export const getCategoryById = async (categoryId) => {

@@ -22,6 +22,7 @@ import AdminUsersPage from "../pages/admin/AdminUsersPage";
 import AdminNotesPage from "../pages/admin/AdminNotesPage";
 import AdminCategoriesPage from "../pages/admin/AdminCategoriesPage";
 import AdminProfilePage from "../pages/admin/AdminProfilePage";
+import CategoryPage from "../pages/CategoryPage";
 
 function AppRoutes() {
   return (
@@ -40,6 +41,8 @@ function AppRoutes() {
 
         {/* Protected Pages */}
         <Route element={<ProtectedRoute />}>
+          <Route path="/categories" element={<CategoryPage />} />
+
           <Route element={<MainLayout />}>
             <Route path="/notes" element={<NotesPage />} />
             <Route path="/notes/upload" element={<UploadNotePage />} />
