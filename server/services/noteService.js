@@ -228,6 +228,20 @@ export const getNoteById = async (noteId) => {
       },
     },
     {
+      $lookup: {
+        from: "users",
+        localField: "uploadedBy",
+        foreignField: "_id",
+        as: "uploadedBy",
+      },
+    },
+    {
+      $unwind: {
+        path: "$uploadedBy",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
       $match: {
         "moderation.status": "approved",
       },
@@ -241,6 +255,8 @@ export const getNoteById = async (noteId) => {
         "category.createdAt": 0,
         "category.updatedAt": 0,
         "category.__v": 0,
+        "uploadedBy.passwordHash": 0,
+        "uploadedBy.__v": 0,
       },
     },
   ]);

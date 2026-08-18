@@ -2,6 +2,7 @@ import {
   Bookmark,
   FileText,
   Upload,
+  LogOut,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -56,7 +57,11 @@ const ProfileQuickActions = () => {
           </Link>
         );
       })}
+
+      
     </div>
+
+    
   );
 };
 
