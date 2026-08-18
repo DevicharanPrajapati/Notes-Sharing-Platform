@@ -48,6 +48,20 @@ export const getAllNotes = async ({
       },
     },
     {
+      $lookup: {
+        from: "users",
+        localField: "uploadedBy",
+        foreignField: "_id",
+        as: "uploadedBy",
+      },
+    },
+    {
+      $unwind: {
+        path: "$uploadedBy",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
       $match: {
         ...(category && {
           "category._id": new mongoose.Types.ObjectId(category),

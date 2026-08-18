@@ -1,34 +1,24 @@
-import { ArrowRight, BookOpen, FileText, FolderOpen } from "lucide-react";
+import { ArrowRight, BookOpen, FolderOpen } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
+
+import { useCategories } from "../../context/CategoryContext";
 
 function CategorySection() {
-  const categories = [
-    {
-      name: "Computer Science",
-      icon: BookOpen,
-      count: "120+ Notes",
-    },
-    {
-      name: "Database",
-      icon: FolderOpen,
-      count: "80+ Notes",
-    },
-    {
-      name: "Programming",
-      icon: FileText,
-      count: "150+ Notes",
-    },
-    {
-      name: "Web Development",
-      icon: BookOpen,
-      count: "90+ Notes",
-    },
-  ];
+  const {
+    categories,
+    loading,
+    error,
+    fetchCategories,
+  } = useCategories();
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   return (
     <section className="px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-
         {/* Section Header */}
         <div className="mb-6 flex items-end justify-between">
           <div>
@@ -50,20 +40,59 @@ function CategorySection() {
           </Link>
         </div>
 
-        {/* Categories */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {categories.map((category) => {
-            const Icon = category.icon;
+        {/* Loading */}
+        {loading && (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[1, 2, 3, 4].map((item) => (
+              <div
+                key={item}
+                className="h-36 animate-pulse rounded-xl border border-gray-200 bg-white"
+              />
+            ))}
+          </div>
+        )}
 
-            return (
+        {/* Error */}
+        {!loading && error && (
+          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+            {error}
+          </div>
+        )}
+
+        {/* Empty */}
+        {!loading && !error && categories.length === 0 && (
+          <div className="rounded-xl border border-gray-200 bg-white p-8 text-center">
+            <FolderOpen
+              size={32}
+              className="mx-auto text-gray-400"
+            />
+
+            <p className="mt-3 text-sm text-gray-500">
+              No categories available.
+            </p>
+          </div>
+        )}
+
+        {/* Categories */}
+        {!loading && !error && categories.length > 0 && (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {categories.slice(0, 4).map((category) => (
               <Link
-                key={category.name}
-                to="/categories"
+                key={category._id}
+                to={`/category/${category.slug}`}
                 className="group rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-indigo-200 hover:shadow-md"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
-                    <Icon size={22} />
+                  <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-lg bg-indigo-50 text-indigo-600">
+                    {category.image ? (
+                      <img
+                        src={category.image}
+                        alt={category.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <BookOpen size={22} />
+                    )}
                   </div>
 
                   <ArrowRight
@@ -77,13 +106,26 @@ function CategorySection() {
                 </h3>
 
                 <p className="mt-1 text-sm text-gray-500">
-                  {category.count}
+                  {category.notesCount || 0}{" "}
+                  {category.notesCount === 1
+                    ? "Note"
+                    : "Notes"}
                 </p>
               </Link>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        )}
 
+        {/* Mobile View All */}
+        <div className="mt-5 sm:hidden">
+          <Link
+            to="/categories"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-700"
+          >
+            View All Categories
+            <ArrowRight size={16} />
+          </Link>
+        </div>
       </div>
     </section>
   );

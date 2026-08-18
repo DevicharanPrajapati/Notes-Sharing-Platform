@@ -1,32 +1,27 @@
+import { useEffect } from "react";
 import { ArrowRight, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { useNotes } from "../../context/NoteContext";
+
 function RecentNotes() {
-  const recentNotes = [
-    {
-      id: 1,
-      title: "Java Programming Notes",
-      category: "Programming",
-      author: "Prajapati",
-    },
-    {
-      id: 2,
-      title: "Database Management System",
-      category: "Database",
-      author: "Rahul",
-    },
-    {
-      id: 3,
-      title: "Web Development Basics",
-      category: "Web Development",
-      author: "Dev",
-    },
-  ];
+  const {
+    notes,
+    loading,
+    error,
+    fetchNotes,
+  } = useNotes();
+
+  useEffect(() => {
+    fetchNotes({
+      page: 1,
+      limit: 3,
+    });
+  }, []);
 
   return (
     <section className="bg-white px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-
         {/* Section Header */}
         <div className="mb-6 flex items-end justify-between">
           <div>
@@ -48,48 +43,106 @@ function RecentNotes() {
           </Link>
         </div>
 
-        {/* Notes */}
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {recentNotes.map((note) => (
-            <div
-              key={note.id}
-              className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
-            >
-              <div className="flex items-start justify-between">
+        {/* Loading */}
+        {loading && (
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((item) => (
+              <div
+                key={item}
+                className="h-48 animate-pulse rounded-xl border border-gray-200 bg-gray-50"
+              />
+            ))}
+          </div>
+        )}
 
-                {/* Icon */}
-                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
-                  <FileText size={22} />
-                </div>
+        {/* Error */}
+        {!loading && error && (
+          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+            {error}
+          </div>
+        )}
 
-                {/* Category */}
-                <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-                  {note.category}
-                </span>
-              </div>
+        {/* Empty */}
+        {!loading &&
+          !error &&
+          (!notes || notes.length === 0) && (
+            <div className="rounded-xl border border-gray-200 bg-gray-50 p-10 text-center">
+              <FileText
+                size={36}
+                className="mx-auto text-gray-400"
+              />
 
-              {/* Title */}
-              <h3 className="mt-5 font-semibold text-gray-900">
-                {note.title}
-              </h3>
-
-              {/* Author */}
-              <p className="mt-2 text-sm text-gray-500">
-                Uploaded by {note.author}
+              <p className="mt-3 text-sm text-gray-500">
+                No notes available yet.
               </p>
-
-              {/* View */}
-              <Link
-                to={`/notes/${note.id}`}
-                className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-700"
-              >
-                View Note
-                <ArrowRight size={15} />
-              </Link>
             </div>
-          ))}
-        </div>
+          )}
 
+        {/* Notes */}
+        {!loading &&
+          !error &&
+          notes?.length > 0 && (
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {notes.map((note) => (
+                <div
+                  key={note._id}
+                  className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    {/* Icon */}
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+                      <FileText size={22} />
+                    </div>
+
+                    {/* Category */}
+                    {note.category?.name && (
+                      <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
+                        {note.category.name}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="mt-5 line-clamp-2 font-semibold text-gray-900">
+                    {note.title}
+                  </h3>
+
+                  {/* Subject */}
+                  {note.subject && (
+                    <p className="mt-2 text-sm text-gray-500">
+                      Subject: {note.subject}
+                    </p>
+                  )}
+
+                  {/* Author */}
+                  <p className="mt-1 text-sm text-gray-500">
+                    Uploaded by{" "}
+                    {note.uploadedBy?.name || "Unknown"}
+                  </p>
+
+                  {/* View */}
+                  <Link
+                    to={`/notes/${note._id}`}
+                    className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-700"
+                  >
+                    View Note
+                    <ArrowRight size={15} />
+                  </Link>
+                </div>
+              ))}
+            </div>
+          )}
+
+        {/* Mobile View All */}
+        <div className="mt-5 sm:hidden">
+          <Link
+            to="/notes"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-700"
+          >
+            View All Notes
+            <ArrowRight size={16} />
+          </Link>
+        </div>
       </div>
     </section>
   );

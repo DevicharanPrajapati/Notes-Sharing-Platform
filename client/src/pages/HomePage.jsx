@@ -1,3 +1,4 @@
+import AboutSection from "../components/home/AboutSection";
 import CategorySection from "../components/home/CategorySection";
 import CommunityCTA from "../components/home/CommunityCTA";
 import HeroSection from "../components/home/HeroSection";
@@ -14,6 +15,8 @@ const HomePage = () => {
       <CategorySection />
 
       <RecentNotes />
+
+      <AboutSection />
 
       <CommunityCTA />
     </div>

@@ -131,7 +131,7 @@ export const NoteProvider = ({ children }) => {
       const response = await api.get("/api/notes/my-notes");
 
       setNotes(response.data.notes || []);
-
+      console.log(response.data.notes)
       return response.data.notes || [];
     } catch (error) {
       const message =
