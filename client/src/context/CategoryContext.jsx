@@ -26,6 +26,28 @@ export const CategoryProvider = ({ children }) => {
     }
   };
 
+  const fetchCategoryBySlug = async (slug) => {
+  try {
+    setLoading(true);
+    setError(null);
+
+    const response = await api.get(
+      `/api/categories/slug/${slug}`
+    );
+
+    return response.data.category;
+  } catch (error) {
+    const message =
+      error.response?.data?.message ||
+      "Failed to fetch category";
+
+    setError(message);
+    throw error;
+  } finally {
+    setLoading(false);
+  }
+};
+
   return (
     <CategoryContext.Provider
       value={{
@@ -33,6 +55,7 @@ export const CategoryProvider = ({ children }) => {
         loading,
         error,
         fetchCategories,
+        fetchCategoryBySlug,
       }}
     >
       {children}

@@ -23,6 +23,7 @@ import AdminNotesPage from "../pages/admin/AdminNotesPage";
 import AdminCategoriesPage from "../pages/admin/AdminCategoriesPage";
 import AdminProfilePage from "../pages/admin/AdminProfilePage";
 import CategoryPage from "../pages/CategoryPage";
+import CategoryNotesPage from "../pages/CategoryNotesPage";
 
 function AppRoutes() {
   return (
@@ -41,10 +42,11 @@ function AppRoutes() {
 
         {/* Protected Pages */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/categories" element={<CategoryPage />} />
-
           <Route element={<MainLayout />}>
             <Route path="/notes" element={<NotesPage />} />
+            <Route path="/categories" element={<CategoryPage />} />
+            <Route path="/category/:slug" element={<CategoryNotesPage />} />
+
             <Route path="/notes/upload" element={<UploadNotePage />} />
             <Route path="/notes/:id" element={<NoteDetailsPage />} />
             <Route path="/profile" element={<Profile />} />
@@ -61,11 +63,11 @@ function AppRoutes() {
               path="/admin"
               element={<Navigate to="/admin/dashboard" replace />}
             />
-
             <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
             <Route path="/admin/users" element={<AdminUsersPage />} />
             <Route path="/admin/notes" element={<AdminNotesPage />} />
             <Route path="/admin/categories" element={<AdminCategoriesPage />} />
+            t
             <Route path="/admin/profile" element={<AdminProfilePage />} />
           </Route>
         </Route>

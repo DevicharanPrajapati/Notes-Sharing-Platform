@@ -4,6 +4,7 @@ import {
   createCategory,
   getAllCategories,
   getCategoryById,
+  getCategoryBySlug,
   updateCategory,
   deleteCategory,
 } from "../services/categoryService.js";
@@ -50,6 +51,33 @@ export const getCategoryController = asyncHandler(async (req, res) => {
     category,
   });
 });
+
+export const getCategoryBySlugController = async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    const category = await getCategoryBySlug(slug);
+
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      category,
+    });
+  } catch (error) {
+    console.error("Get category by slug error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch category",
+    });
+  }
+};
 
 export const updateCategoryController = asyncHandler(async (req, res) => {
   const { name, slug, description, image, isActive } = req.body;

@@ -60,6 +60,13 @@ export const getCategoryById = async (categoryId) => {
   return await Category.findById(categoryId);
 };
 
+export const getCategoryBySlug = async (slug) => {
+  return await Category.findOne({
+    slug,
+    isActive: true,
+  });
+};
+
 export const updateCategory = async (categoryId, updateData) => {
   return await Category.findByIdAndUpdate(
     categoryId,
