@@ -38,6 +38,10 @@ const noteSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    isPublic: {
+      type: Boolean,
+      default: true,
+    },
 
     isPaid: {
       type: Boolean,

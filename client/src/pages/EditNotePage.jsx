@@ -9,12 +9,7 @@ const EditNotePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const {
-    getSingleNote,
-    updateNote,
-    loading,
-    error,
-  } = useNotes();
+  const { getMyNoteForEdit, updateNote, loading, error } = useNotes();
 
   const {
     categories,
@@ -49,8 +44,7 @@ const EditNotePage = () => {
       try {
         setLoadingNote(true);
 
-        const data = await getSingleNote(id);
-
+        const data = await getMyNoteForEdit(id);
         setNote(data);
 
         setFormData({
@@ -158,9 +152,7 @@ const EditNotePage = () => {
     } catch (error) {
       console.error("Update failed:", error);
 
-      setSubmitError(
-        error.response?.data?.message || "Failed to update note"
-      );
+      setSubmitError(error.response?.data?.message || "Failed to update note");
     }
   };
 
@@ -179,10 +171,7 @@ const EditNotePage = () => {
     return (
       <main className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
         <div className="text-center">
-          <FileText
-            className="mx-auto text-gray-400"
-            size={48}
-          />
+          <FileText className="mx-auto text-gray-400" size={48} />
 
           <h1 className="mt-4 text-xl font-bold text-gray-900">
             Note not found
@@ -207,7 +196,6 @@ const EditNotePage = () => {
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
-
         {/* Back */}
         <Link
           to="/my-notes"
@@ -219,9 +207,7 @@ const EditNotePage = () => {
 
         {/* Header */}
         <div className="mb-8">
-          <p className="text-sm font-semibold text-indigo-600">
-            My Notes
-          </p>
+          <p className="text-sm font-semibold text-indigo-600">My Notes</p>
 
           <h1 className="mt-1 text-3xl font-bold tracking-tight text-gray-900">
             Edit Note
@@ -249,9 +235,7 @@ const EditNotePage = () => {
           {/* Success */}
           {success && (
             <div className="mb-6 rounded-xl border border-green-200 bg-green-50 px-4 py-3">
-              <p className="text-sm font-medium text-green-600">
-                {success}
-              </p>
+              <p className="text-sm font-medium text-green-600">{success}</p>
             </div>
           )}
 
@@ -301,10 +285,7 @@ const EditNotePage = () => {
               {categories
                 .filter((category) => category.isActive)
                 .map((category) => (
-                  <option
-                    key={category._id}
-                    value={category._id}
-                  >
+                  <option key={category._id} value={category._id}>
                     {category.name}
                   </option>
                 ))}
@@ -364,9 +345,7 @@ const EditNotePage = () => {
                 </div>
 
                 <div className="min-w-0">
-                  <p className="text-xs text-gray-500">
-                    Current file
-                  </p>
+                  <p className="text-xs text-gray-500">Current file</p>
 
                   <p className="truncate text-sm font-semibold text-gray-800">
                     {file ? file.name : "Existing note file"}
@@ -446,18 +425,13 @@ const EditNotePage = () => {
                 </div>
 
                 <div className="px-4 py-3">
-                  <p className="text-xs text-gray-500">
-                    Current thumbnail
-                  </p>
+                  <p className="text-xs text-gray-500">Current thumbnail</p>
                 </div>
               </div>
             ) : (
               <div className="flex h-40 items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50">
                 <div className="text-center">
-                  <ImageIcon
-                    size={28}
-                    className="mx-auto text-gray-400"
-                  />
+                  <ImageIcon size={28} className="mx-auto text-gray-400" />
 
                   <p className="mt-2 text-sm text-gray-500">
                     No thumbnail uploaded
@@ -473,7 +447,6 @@ const EditNotePage = () => {
             >
               <ImageIcon size={18} />
               Replace thumbnail
-
               <input
                 id="thumbnail"
                 type="file"

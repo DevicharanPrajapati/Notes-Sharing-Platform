@@ -48,7 +48,7 @@ export const NoteProvider = ({ children }) => {
         params,
       });
 
-      console.log(response.data);
+      // console.log(response.data);
 
       setNotes(response.data.notes || []);
 
@@ -131,7 +131,7 @@ export const NoteProvider = ({ children }) => {
       const response = await api.get("/api/notes/my-notes");
 
       setNotes(response.data.notes || []);
-      console.log(response.data.notes)
+      // console.log(response.data.notes)
       return response.data.notes || [];
     } catch (error) {
       const message =
@@ -142,6 +142,11 @@ export const NoteProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
+  };
+  const getMyNoteForEdit = async (noteId) => {
+    const response = await api.get(`/api/notes/my-notes/${noteId}`);
+
+    return response.data.note;
   };
 
   const updateNote = async (id, formData) => {
@@ -186,6 +191,19 @@ export const NoteProvider = ({ children }) => {
     }
   };
 
+  const updateNoteVisibility = async (noteId, isPublic) => {
+    try {
+      const response = await api.patch(`/api/notes/${noteId}/visibility`, {
+        isPublic,
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error("Update note visibility failed:", error);
+      throw error;
+    }
+  };
+
   return (
     <NoteContext.Provider
       value={{
@@ -201,6 +219,8 @@ export const NoteProvider = ({ children }) => {
         fetchMyNotes,
         updateNote,
         deleteNote,
+        updateNoteVisibility,
+        getMyNoteForEdit,
       }}
     >
       {children}

@@ -1,12 +1,13 @@
 import fs from "fs/promises";
 import Note from "../models/Note.js";
+import ApiError from "../utils/ApiError.js";
+import mongoose from "mongoose";
+
 import {
   createModeration,
   resetModeration,
   deleteModeration,
 } from "./noteModerationService.js";
-
-import mongoose from "mongoose";
 
 export const createNote = async (noteData) => {
   const note = await Note.create(noteData);
@@ -63,6 +64,7 @@ export const getAllNotes = async ({
     },
     {
       $match: {
+        isPublic: true,
         ...(category && {
           "category._id": new mongoose.Types.ObjectId(category),
         }),
@@ -197,14 +199,23 @@ export const getNotesByUser = async (userId) => {
     },
   ]);
 };
+export const getMyNoteById = async (noteId, userId) => {
+  return await Note.findOne({
+    _id: noteId,
+    uploadedBy: userId,
+  })
+    .populate("category")
+    .populate("uploadedBy", "name email");
+};
 
-export const getNoteById = async (noteId) => {
+export const getNoteById = async (noteId, userId = null) => {
   const notes = await Note.aggregate([
     {
       $match: {
         _id: new mongoose.Types.ObjectId(noteId),
       },
     },
+
     {
       $lookup: {
         from: "notemoderations",
@@ -213,6 +224,7 @@ export const getNoteById = async (noteId) => {
         as: "moderation",
       },
     },
+
     {
       $lookup: {
         from: "categories",
@@ -221,12 +233,14 @@ export const getNoteById = async (noteId) => {
         as: "category",
       },
     },
+
     {
       $unwind: {
         path: "$category",
         preserveNullAndEmptyArrays: true,
       },
     },
+
     {
       $lookup: {
         from: "users",
@@ -235,17 +249,38 @@ export const getNoteById = async (noteId) => {
         as: "uploadedBy",
       },
     },
+
     {
       $unwind: {
         path: "$uploadedBy",
         preserveNullAndEmptyArrays: true,
       },
     },
+
+    // Only approved notes can be viewed
     {
       $match: {
         "moderation.status": "approved",
       },
     },
+
+    // Public notes OR private notes owned by current user
+    {
+      $match: userId
+        ? {
+            $or: [
+              { isPublic: true },
+              {
+                isPublic: false,
+                uploadedBy: new mongoose.Types.ObjectId(userId),
+              },
+            ],
+          }
+        : {
+            isPublic: true,
+          },
+    },
+
     {
       $project: {
         moderation: 0,
@@ -272,11 +307,23 @@ export const incrementDownloads = async (noteId) => {
   );
 };
 
-export const getNoteForDownload = async (noteId) => {
+export const getNoteForDownload = async (noteId, userId = null) => {
   const notes = await Note.aggregate([
     {
       $match: {
         _id: new mongoose.Types.ObjectId(noteId),
+
+        $or: [
+          { isPublic: true },
+          ...(userId
+            ? [
+                {
+                  isPublic: false,
+                  uploadedBy: new mongoose.Types.ObjectId(userId),
+                },
+              ]
+            : []),
+        ],
       },
     },
     {
@@ -396,4 +443,25 @@ const deleteFile = async (filePath) => {
       console.error(`Failed to delete file: ${filePath}`, error);
     }
   }
+};
+
+export const updateNoteVisibility = async ({ noteId, userId, isPublic }) => {
+  const note = await Note.findById(noteId);
+
+  if (!note) {
+    throw new ApiError(404, "Note not found");
+  }
+
+  if (note.uploadedBy.toString() !== userId.toString()) {
+    throw new ApiError(
+      403,
+      "You are not allowed to change this note's visibility",
+    );
+  }
+
+  note.isPublic = isPublic;
+
+  await note.save();
+
+  return note;
 };

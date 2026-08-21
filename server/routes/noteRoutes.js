@@ -9,6 +9,8 @@ import {
   updateNoteController,
   deleteNoteController,
   viewNote,
+  updateNoteVisibilityController,
+  getMyNoteForEdit,
 } from "../controllers/noteController.js";
 
 import upload from "../middleware/uploadMiddleware.js";
@@ -28,10 +30,11 @@ router.post(
 
 router.get("/", getNotes);
 
+router.get("/my-notes", authMiddleware, getMyNotes);
 router.get(
-  "/my-notes",
+  "/my-notes/:id",
   authMiddleware,
-  getMyNotes,
+  getMyNoteForEdit,
 );
 
 router.put(
@@ -44,24 +47,14 @@ router.put(
   updateNoteController,
 );
 
-router.delete(
-  "/:id",
-  authMiddleware,
-  deleteNoteController,
-);
+router.patch("/:id/visibility", authMiddleware, updateNoteVisibilityController);
+
+router.delete("/:id", authMiddleware, deleteNoteController);
 
 router.get("/:id/view", authMiddleware, viewNote);
 
-router.get(
-  "/:id",
-  authMiddleware,
-  getSingleNote,
-);
+router.get("/:id", authMiddleware, getSingleNote);
 
-router.get(
-  "/:id/download",
-  authMiddleware,
-  downloadNote,
-);
+router.get("/:id/download", authMiddleware, downloadNote);
 
 export default router;

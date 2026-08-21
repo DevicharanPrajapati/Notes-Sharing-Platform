@@ -1,14 +1,28 @@
-import {
-  ArrowRight,
-  Edit,
-  FileText,
-  Trash2,
-} from "lucide-react";
+import { ArrowRight, Edit, FileText, Globe, Lock, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNotes } from "../../context/NoteContext";
 
 const MyNoteCard = ({ note, onDelete, deleting }) => {
+  const { updateNoteVisibility } = useNotes();
+
+  const [isPublic, setIsPublic] = useState(note.isPublic);
+  const [updatingVisibility, setUpdatingVisibility] = useState(false);
   if (!note) return null;
 
+  const handleVisibilityToggle = async () => {
+    try {
+      setUpdatingVisibility(true);
+
+      const response = await updateNoteVisibility(note._id, !isPublic);
+
+      setIsPublic(response.note.isPublic);
+    } catch (error) {
+      console.error("Failed to update note visibility:", error);
+    } finally {
+      setUpdatingVisibility(false);
+    }
+  };
   return (
     <article className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-lg">
       {/* Thumbnail */}
@@ -62,10 +76,47 @@ const MyNoteCard = ({ note, onDelete, deleting }) => {
           </span>
 
           {note.createdAt && (
-            <span>
-              {new Date(note.createdAt).toLocaleDateString()}
-            </span>
+            <span>{new Date(note.createdAt).toLocaleDateString()}</span>
           )}
+        </div>
+        {/* Visibility */}
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={handleVisibilityToggle}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              handleVisibilityToggle();
+            }
+          }}
+          className={`mt-4 flex cursor-pointer items-center justify-between rounded-xl border px-4 py-3 transition ${
+            isPublic
+              ? "border-green-200 bg-green-50"
+              : "border-gray-200 bg-gray-50"
+          } ${updatingVisibility ? "cursor-not-allowed opacity-60" : ""}`}
+        >
+          <div
+            className={`flex items-center gap-2 text-sm font-semibold ${
+              isPublic ? "text-green-700" : "text-gray-600"
+            }`}
+          >
+            {isPublic ? <Globe size={17} /> : <Lock size={17} />}
+
+            {isPublic ? "Public" : "Private"}
+          </div>
+
+          {/* Toggle */}
+          <div
+            className={`relative h-6 w-11 rounded-full transition ${
+              isPublic ? "bg-green-600" : "bg-gray-300"
+            }`}
+          >
+            <span
+              className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow-sm transition ${
+                isPublic ? "left-6" : "left-1"
+              }`}
+            />
+          </div>
         </div>
 
         {/* Actions */}

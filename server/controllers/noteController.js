@@ -8,6 +8,8 @@ import {
   incrementDownloads,
   updateNote,
   deleteNote,
+  updateNoteVisibility,
+  getMyNoteById,
 } from "../services/noteService.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/ApiError.js";
@@ -79,8 +81,7 @@ export const getMyNotes = asyncHandler(async (req, res) => {
 });
 
 export const getSingleNote = asyncHandler(async (req, res) => {
-  const note = await getNoteById(req.params.id);
-
+  const note = await getNoteById(req.params.id, req.user?._id);
   if (!note) {
     throw new ApiError(404, "Note not found");
   }
@@ -98,7 +99,7 @@ export const getSingleNote = asyncHandler(async (req, res) => {
 });
 
 export const downloadNote = asyncHandler(async (req, res) => {
-  const note = await getNoteForDownload(req.params.id);
+  const note = await getNoteForDownload(req.params.id, req.user?._id);
 
   if (!note) {
     throw new ApiError(404, "Note not found");
@@ -162,8 +163,7 @@ export const deleteNoteController = asyncHandler(async (req, res) => {
 });
 
 export const viewNote = asyncHandler(async (req, res) => {
-  const note = await getNoteForDownload(req.params.id);
-
+  const note = await getNoteForDownload(req.params.id, req.user?._id);
   if (!note) {
     throw new ApiError(404, "Note not found");
   }
@@ -174,4 +174,66 @@ export const viewNote = asyncHandler(async (req, res) => {
   res.setHeader("Content-Disposition", "inline");
 
   res.sendFile(filePath);
+});
+
+
+export const updateNoteVisibilityController = asyncHandler(
+  async (req, res) => {
+    const { isPublic } = req.body;
+
+    if (typeof isPublic !== "boolean") {
+      throw new ApiError(
+        400,
+        "isPublic must be a boolean",
+      );
+    }
+
+    const note = await updateNoteVisibility({
+      noteId: req.params.id,
+      userId: req.user._id,
+      isPublic,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Note is now ${
+        note.isPublic ? "public" : "private"
+      }`,
+      note: {
+        _id: note._id,
+        isPublic: note.isPublic,
+      },
+    });
+  },
+);
+
+export const getMyNoteForEdit = asyncHandler(async (req, res) => {
+  const note = await getMyNoteById(
+    req.params.id,
+    req.user._id,
+  );
+
+  if (!note) {
+    throw new ApiError(
+      404,
+      "Note not found or you are not authorized",
+    );
+  }
+
+  const noteResponse = {
+    ...note.toObject(),
+    file: fileUrl(
+      note.file,
+      `${req.protocol}://${req.get("host")}`,
+    ),
+    thumbnail: fileUrl(
+      note.thumbnail,
+      `${req.protocol}://${req.get("host")}`,
+    ),
+  };
+
+  res.status(200).json({
+    success: true,
+    note: noteResponse,
+  });
 });
