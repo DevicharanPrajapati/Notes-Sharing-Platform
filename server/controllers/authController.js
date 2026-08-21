@@ -1,6 +1,12 @@
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiResponse from "../utils/ApiResponse.js";
-import { registerUser, loginUser } from "../services/authService.js";
+import ApiError from "../utils/ApiError.js";
+
+import {
+  registerUser,
+  loginUser,
+  updatePassword,
+} from "../services/authService.js";
 
 export const register = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
@@ -19,7 +25,7 @@ export const register = asyncHandler(async (req, res) => {
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  const {token, user} = await loginUser({
+  const { token, user } = await loginUser({
     email,
     password,
   });
@@ -31,10 +37,36 @@ export const login = asyncHandler(async (req, res) => {
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
-  res.status(200).json(new ApiResponse(200, {user}, "Login successful"));
+  res.status(200).json(new ApiResponse(200, { user }, "Login successful"));
 });
 
+export const changePassword = asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
 
+  if (!currentPassword || !newPassword) {
+    throw new ApiError(
+      400,
+      "Current password and new password are required",
+    );
+  }
+
+  if (newPassword.length < 6) {
+    throw new ApiError(
+      400,
+      "New password must be at least 6 characters",
+    );
+  }
+
+  const result = await updatePassword({
+    userId: req.user.id,
+    currentPassword,
+    newPassword,
+  });
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, null, result.message));
+});
 
 export const getMe = asyncHandler(async (req, res) => {
   res.status(200).json(
@@ -43,11 +75,10 @@ export const getMe = asyncHandler(async (req, res) => {
       {
         user: req.user,
       },
-      "Current user fetched successfully"
-    )
+      "Current user fetched successfully",
+    ),
   );
 });
-
 
 export const logout = asyncHandler(async (req, res) => {
   res.clearCookie("accessToken", {
@@ -56,11 +87,5 @@ export const logout = asyncHandler(async (req, res) => {
     sameSite: "lax",
   });
 
-  res.status(200).json(
-    new ApiResponse(
-      200,
-      null,
-      "Logout successful"
-    )
-  );
+  res.status(200).json(new ApiResponse(200, null, "Logout successful"));
 });

@@ -72,4 +72,53 @@ const loginUser = async ({ email, password }) => {
   };
 };
 
-export { registerUser, loginUser };
+
+const updatePassword = async ({
+  userId,
+  currentPassword,
+  newPassword,
+}) => {
+  // 1. Find user
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  // 2. Verify current password
+  const isPasswordValid = await bcrypt.compare(
+    currentPassword,
+    user.passwordHash
+  );
+
+  if (!isPasswordValid) {
+    throw new ApiError(401, "Current password is incorrect");
+  }
+
+  // 3. Prevent using the same password
+  const isSamePassword = await bcrypt.compare(
+    newPassword,
+    user.passwordHash
+  );
+
+  if (isSamePassword) {
+    throw new ApiError(
+      400,
+      "New password must be different from current password"
+    );
+  }
+
+  // 4. Hash new password
+  const passwordHash = await bcrypt.hash(newPassword, 10);
+
+  // 5. Update password
+  user.passwordHash = passwordHash;
+
+  await user.save();
+
+  return {
+    message: "Password updated successfully",
+  };
+};
+
+export { registerUser, loginUser, updatePassword };

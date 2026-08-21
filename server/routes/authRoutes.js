@@ -1,6 +1,6 @@
 import express from "express";
 
-import { register, login, getMe, logout } from "../controllers/authController.js";
+import { register, login, getMe, logout, changePassword } from "../controllers/authController.js";
 import validationMiddleware from "../middleware/validationMiddleware.js";
 import {
   registerValidator,
@@ -28,6 +28,7 @@ router.post(
 );
 
 router.get("/me", authMiddleware, getMe);
+router.patch("/password", authMiddleware, changePassword)
 router.post("/logout", authMiddleware, logout);
 
 export default router;
