@@ -6,18 +6,23 @@ import {
   Eye,
   FileText,
   User,
+  Bookmark,
 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 
 import { useNotes } from "../context/NoteContext";
+import { useSavedNotes } from "../context/SavedNoteContext";
 
 const NoteDetailsPage = () => {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const { id } = useParams();
   const { getSingleNote, getNoteDownloadUrl, error } = useNotes();
+  const { saveNote, unsaveNote, checkSavedNote } = useSavedNotes();
 
   const [note, setNote] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isSaved, setIsSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const loadNote = async () => {
@@ -25,6 +30,10 @@ const NoteDetailsPage = () => {
         setLoading(true);
 
         const data = await getSingleNote(id);
+
+        const saved = await checkSavedNote(id);
+
+        setIsSaved(saved);
 
         setNote(data);
       } catch (error) {
@@ -36,6 +45,24 @@ const NoteDetailsPage = () => {
 
     loadNote();
   }, [id]);
+
+  const handleSaveToggle = async () => {
+    try {
+      setSaving(true);
+
+      if (isSaved) {
+        await unsaveNote(note._id);
+        setIsSaved(false);
+      } else {
+        await saveNote(note._id);
+        setIsSaved(true);
+      }
+    } catch (error) {
+      console.error("Failed to update saved note:", error);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -132,9 +159,28 @@ const NoteDetailsPage = () => {
               </div>
 
               {/* Title */}
-              <h1 className="mt-5 text-3xl font-bold leading-tight text-gray-900 sm:text-4xl">
-                {note.title}
-              </h1>
+              <div className="mt-5 flex items-start justify-between gap-4">
+                <h1 className="text-3xl font-bold leading-tight text-gray-900 sm:text-4xl">
+                  {note.title}
+                </h1>
+
+                <button
+                  type="button"
+                  onClick={handleSaveToggle}
+                  disabled={saving}
+                  title={isSaved ? "Remove from saved notes" : "Save note"}
+                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border shadow-sm transition ${
+                    isSaved
+                      ? "border-indigo-200 bg-indigo-50 text-indigo-600"
+                      : "border-gray-200 bg-white text-gray-500 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600"
+                  } disabled:cursor-not-allowed disabled:opacity-60`}
+                >
+                  <Bookmark
+                    size={21}
+                    fill={isSaved ? "currentColor" : "none"}
+                  />
+                </button>
+              </div>
 
               {/* Description */}
               <div className="mt-6">

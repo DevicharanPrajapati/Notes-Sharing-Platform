@@ -1,9 +1,34 @@
-import { ArrowRight, Download, FileText } from "lucide-react";
+import { ArrowRight, Bookmark, Download, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useSavedNotes } from "../../context/SavedNoteContext";
 
 const NoteCard = ({ note }) => {
-  if (!note) return null;
+  const { savedNotes, saveNote, unsaveNote } = useSavedNotes();
+  const [saving, setSaving] = useState(false);
 
+  const isSaved = savedNotes.some(
+    (savedNote) => (savedNote.noteId?._id || savedNote.noteId) === note._id,
+  );
+
+  const handleSaveToggle = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    try {
+      setSaving(true);
+
+      if (isSaved) {
+        await unsaveNote(note._id);
+      } else {
+        await saveNote(note._id);
+      }
+    } catch (error) {
+      console.error("Failed to update saved note:", error);
+    } finally {
+      setSaving(false);
+    }
+  };
   return (
     <article className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-xl">
       {/* Thumbnail */}
@@ -24,19 +49,25 @@ const NoteCard = ({ note }) => {
 
         {note.subject && (
           <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-            {note.category?.name && (
-              <span className="rounded-full bg-indigo-600/95 px-3 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-sm">
-                {note.category.name}
-              </span>
-            )}
-
-            {note.subject && (
-              <span className="rounded-full bg-white/95 px-3 py-1.5 text-xs font-semibold text-indigo-600 shadow-sm backdrop-blur-sm">
-                {note.subject}
-              </span>
-            )}
+            <span className="rounded-full bg-white/95 px-3 py-1.5 text-xs font-semibold text-indigo-600 shadow-sm backdrop-blur-sm">
+              {note.subject}
+            </span>
           </div>
         )}
+
+        <button
+          type="button"
+          onClick={handleSaveToggle}
+          disabled={saving}
+          title={isSaved ? "Remove from saved notes" : "Save note"}
+          className={`absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full shadow-sm backdrop-blur-sm transition ${
+            isSaved
+              ? "bg-indigo-600 text-white"
+              : "bg-white/95 text-gray-500 hover:bg-indigo-50 hover:text-indigo-600"
+          } disabled:cursor-not-allowed disabled:opacity-60`}
+        >
+          <Bookmark size={19} fill={isSaved ? "currentColor" : "none"} />
+        </button>
       </div>
 
       {/* Content */}

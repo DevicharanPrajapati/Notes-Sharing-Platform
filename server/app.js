@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
+import savedNoteRoutes from "./routes/savedNoteRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
@@ -31,6 +32,9 @@ app.use("/api/auth", authRoutes);
 
 //notes routes
 app.use("/api/notes", noteRoutes);
+
+//savedNote
+app.use("/api/saved-note", savedNoteRoutes);
 
 //categoryRoutes
 app.use("/api/categories", categoryRoutes);

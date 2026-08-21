@@ -1,12 +1,44 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, FileText } from "lucide-react";
+import { ArrowLeft, FileText, Bookmark } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 
 import { useCategories } from "../context/CategoryContext";
 import { useNotes } from "../context/NoteContext";
+import { useSavedNotes } from "../context/SavedNoteContext";
+import NotesGrid from "../components/notes/NotesGrid";
 
 const CategoryNotesPage = () => {
   const { slug } = useParams();
+  const { saveNote, unsaveNote, checkSavedNote } = useSavedNotes();
+
+  const [savedNotes, setSavedNotes] = useState({});
+  const [savingId, setSavingId] = useState(null);
+
+  const handleSaveToggle = async (noteId) => {
+    try {
+      setSavingId(noteId);
+
+      if (savedNotes[noteId]) {
+        await unsaveNote(noteId);
+
+        setSavedNotes((prev) => ({
+          ...prev,
+          [noteId]: false,
+        }));
+      } else {
+        await saveNote(noteId);
+
+        setSavedNotes((prev) => ({
+          ...prev,
+          [noteId]: true,
+        }));
+      }
+    } catch (error) {
+      console.error("Failed to update saved note:", error);
+    } finally {
+      setSavingId(null);
+    }
+  };
 
   const {
     fetchCategoryBySlug,
@@ -53,7 +85,6 @@ const CategoryNotesPage = () => {
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-
         {/* Back */}
         <Link
           to="/categories"
@@ -66,9 +97,7 @@ const CategoryNotesPage = () => {
         {/* Category Header */}
         {!loading && category && (
           <div className="mb-8">
-            <p className="text-sm font-semibold text-indigo-600">
-              Category
-            </p>
+            <p className="text-sm font-semibold text-indigo-600">Category</p>
 
             <h1 className="mt-1 text-3xl font-bold text-gray-900 sm:text-4xl">
               {category.name}
@@ -106,73 +135,22 @@ const CategoryNotesPage = () => {
         )}
 
         {/* Empty */}
-        {!loading &&
-          !error &&
-          notes.length === 0 && (
-            <div className="rounded-2xl border border-gray-200 bg-white p-10 text-center">
-              <FileText
-                size={42}
-                className="mx-auto text-gray-300"
-              />
+        {!loading && !error && notes.length === 0 && (
+          <div className="rounded-2xl border border-gray-200 bg-white p-10 text-center">
+            <FileText size={42} className="mx-auto text-gray-300" />
 
-              <h2 className="mt-4 text-lg font-semibold text-gray-900">
-                No notes found
-              </h2>
+            <h2 className="mt-4 text-lg font-semibold text-gray-900">
+              No notes found
+            </h2>
 
-              <p className="mt-2 text-sm text-gray-500">
-                There are no approved notes in this category yet.
-              </p>
-            </div>
-          )}
+            <p className="mt-2 text-sm text-gray-500">
+              There are no approved notes in this category yet.
+            </p>
+          </div>
+        )}
 
         {/* Notes */}
-        {!loading &&
-          !error &&
-          notes.length > 0 && (
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {notes.map((note) => (
-                <article
-                  key={note._id}
-                  className="group rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
-                      <FileText size={22} />
-                    </div>
-
-                    {note.subject && (
-                      <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-                        {note.subject}
-                      </span>
-                    )}
-                  </div>
-
-                  <h2 className="mt-5 line-clamp-2 text-lg font-semibold text-gray-900">
-                    {note.title}
-                  </h2>
-
-                  <p className="mt-2 line-clamp-2 text-sm leading-6 text-gray-500">
-                    {note.description ||
-                      "No description available."}
-                  </p>
-
-                  <p className="mt-3 text-xs text-gray-400">
-                    Uploaded by{" "}
-                    <span className="font-medium text-gray-600">
-                      {note.uploadedBy?.name || "Unknown"}
-                    </span>
-                  </p>
-
-                  <Link
-                    to={`/notes/${note._id}`}
-                    className="mt-5 inline-flex text-sm font-semibold text-indigo-600 transition hover:text-indigo-700"
-                  >
-                    View Note
-                  </Link>
-                </article>
-              ))}
-            </div>
-          )}
+        {!loading && !error && notes.length > 0 && <NotesGrid notes={notes} />}
       </div>
     </main>
   );

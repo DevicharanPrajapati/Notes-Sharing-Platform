@@ -24,6 +24,8 @@ import AdminCategoriesPage from "../pages/admin/AdminCategoriesPage";
 import AdminProfilePage from "../pages/admin/AdminProfilePage";
 import CategoryPage from "../pages/CategoryPage";
 import CategoryNotesPage from "../pages/CategoryNotesPage";
+// import SavedNoteCard from "../pages/SavedNotesPage";
+import SavedNotesPage from "../pages/SavedNotesPage";
 
 function AppRoutes() {
   return (
@@ -52,6 +54,7 @@ function AppRoutes() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/my-notes/edit/:id" element={<EditNotePage />} />
             <Route path="/my-notes" element={<MyNotesPage />} />
+            <Route path="/saved-notes" element={<SavedNotesPage />} />
 
             <Route path="/notes/:id/view" element={<NotePdfViewerPage />} />
           </Route>
