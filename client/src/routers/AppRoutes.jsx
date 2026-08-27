@@ -70,7 +70,6 @@ function AppRoutes() {
             <Route path="/admin/users" element={<AdminUsersPage />} />
             <Route path="/admin/notes" element={<AdminNotesPage />} />
             <Route path="/admin/categories" element={<AdminCategoriesPage />} />
-            t
             <Route path="/admin/profile" element={<AdminProfilePage />} />
           </Route>
         </Route>

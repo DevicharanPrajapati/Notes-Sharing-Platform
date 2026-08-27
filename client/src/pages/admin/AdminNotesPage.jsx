@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import {
   Search,
   Eye,
-  CheckCircle,
-  XCircle,
   Trash2,
   FileText,
 } from "lucide-react";
@@ -20,12 +18,40 @@ const AdminNotesPage = () => {
     approveNote,
     rejectNote,
     deleteNote,
+    setPendingNote,
   } = useAdmin();
 
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [category, setCategory] = useState("");
   const [page, setPage] = useState(1);
+
+  const handleSetPending = async (noteId) => {
+    try {
+      await setPendingNote(noteId);
+    } catch (error) {
+      console.error("Failed to set note as pending:", error);
+    }
+  };
+
+  const handleReject = async (note) => {
+    const rejectionReason = window.prompt(
+      "Enter rejection reason:",
+    );
+
+    if (!rejectionReason?.trim()) {
+      return;
+    }
+
+    try {
+      await rejectNote(
+        note._id,
+        rejectionReason.trim(),
+      );
+    } catch (error) {
+      console.error("Failed to reject note:", error);
+    }
+  };
 
   useEffect(() => {
     fetchCategories();
@@ -42,6 +68,7 @@ const AdminNotesPage = () => {
   }, [search, status, category, page]);
 
   const noteList = notes?.notes || [];
+
   const pagination = notes?.pagination || {
     page: 1,
     limit: 10,
@@ -65,7 +92,9 @@ const AdminNotesPage = () => {
     <div>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Notes</h1>
+        <h1 className="text-2xl font-bold text-gray-900">
+          Notes
+        </h1>
 
         <p className="mt-1 text-sm text-gray-500">
           Review and manage notes uploaded by users.
@@ -121,7 +150,10 @@ const AdminNotesPage = () => {
             <option value="">All Categories</option>
 
             {categories.map((item) => (
-              <option key={item._id} value={item._id}>
+              <option
+                key={item._id}
+                value={item._id}
+              >
                 {item.name}
               </option>
             ))}
@@ -182,10 +214,14 @@ const AdminNotesPage = () => {
               <tbody className="divide-y divide-gray-100">
                 {noteList.length > 0 ? (
                   noteList.map((note) => {
-                    const noteStatus = note.moderation?.status || "pending";
+                    const noteStatus =
+                      note.moderation?.status || "pending";
 
                     return (
-                      <tr key={note._id} className="hover:bg-gray-50">
+                      <tr
+                        key={note._id}
+                        className="hover:bg-gray-50"
+                      >
                         {/* Note */}
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
@@ -207,13 +243,15 @@ const AdminNotesPage = () => {
 
                         {/* Category */}
                         <td className="px-6 py-4 text-sm text-gray-600">
-                          {note.category?.name || "No category"}
+                          {note.category?.name ||
+                            "No category"}
                         </td>
 
                         {/* Uploaded By */}
                         <td className="px-6 py-4">
                           <p className="text-sm font-medium text-gray-900">
-                            {note.uploadedBy?.name || "Unknown"}
+                            {note.uploadedBy?.name ||
+                              "Unknown"}
                           </p>
 
                           <p className="text-xs text-gray-500">
@@ -240,60 +278,124 @@ const AdminNotesPage = () => {
                         {/* Actions */}
                         <td className="px-6 py-4">
                           <div className="flex justify-end gap-2">
+                            {/* View */}
                             <button
                               type="button"
-                              onClick={() => window.open(note.file, "_blank")}
-                              className="rounded-lg p-2 text-indigo-600 hover:bg-indigo-50"
+                              onClick={() =>
+                                window.open(
+                                  note.file,
+                                  "_blank",
+                                )
+                              }
+                              className="rounded-lg p-2 text-indigo-600 transition hover:bg-indigo-50"
                               title="View PDF"
                             >
                               <Eye size={17} />
                             </button>
 
+                            {/* Pending */}
                             {noteStatus === "pending" && (
                               <>
                                 <button
                                   type="button"
-                                  onClick={() => approveNote(note._id)}
-                                  disabled={loading}
-                                  className="rounded-lg p-2 text-green-600 hover:bg-green-50 disabled:opacity-50"
-                                  title="Approve note"
+                                  onClick={() =>
+                                    approveNote(note._id)
+                                  }
+                                  className="rounded-lg bg-green-50 px-3 py-2 text-xs font-semibold text-green-600 transition hover:bg-green-100"
                                 >
-                                  <CheckCircle size={17} />
+                                  Approve
                                 </button>
 
                                 <button
                                   type="button"
-                                  onClick={async () => {
-                                    const reason = window.prompt(
-                                      "Enter rejection reason:",
-                                    );
-
-                                    if (!reason) return;
-
-                                    await rejectNote(note._id, reason);
-                                  }}
-                                  disabled={loading}
-                                  className="rounded-lg p-2 text-orange-600 hover:bg-orange-50 disabled:opacity-50"
-                                  title="Reject note"
+                                  onClick={() =>
+                                    handleReject(note)
+                                  }
+                                  className="rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-100"
                                 >
-                                  <XCircle size={17} />
+                                  Reject
                                 </button>
                               </>
                             )}
 
+                            {/* Approved */}
+                            {noteStatus === "approved" && (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleSetPending(
+                                      note._id,
+                                    )
+                                  }
+                                  className="rounded-lg bg-yellow-50 px-3 py-2 text-xs font-semibold text-yellow-600 transition hover:bg-yellow-100"
+                                >
+                                  Pending
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleReject(note)
+                                  }
+                                  className="rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-100"
+                                >
+                                  Reject
+                                </button>
+                              </>
+                            )}
+
+                            {/* Rejected */}
+                            {noteStatus === "rejected" && (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    approveNote(note._id)
+                                  }
+                                  className="rounded-lg bg-green-50 px-3 py-2 text-xs font-semibold text-green-600 transition hover:bg-green-100"
+                                >
+                                  Approve
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleSetPending(
+                                      note._id,
+                                    )
+                                  }
+                                  className="rounded-lg bg-yellow-50 px-3 py-2 text-xs font-semibold text-yellow-600 transition hover:bg-yellow-100"
+                                >
+                                  Pending
+                                </button>
+                              </>
+                            )}
+
+                            {/* Delete */}
                             <button
                               type="button"
                               onClick={async () => {
-                                const confirmed = window.confirm(
-                                  `Are you sure you want to delete "${note.title}"?`,
-                                );
+                                const confirmed =
+                                  window.confirm(
+                                    `Are you sure you want to delete "${note.title}"?`,
+                                  );
 
                                 if (!confirmed) return;
 
-                                await deleteNote(note._id);
+                                try {
+                                  await deleteNote(
+                                    note._id,
+                                  );
+                                } catch (error) {
+                                  console.error(
+                                    "Failed to delete note:",
+                                    error,
+                                  );
+                                }
                               }}
                               disabled={loading}
-                              className="rounded-lg p-2 text-red-600 hover:bg-red-50 disabled:opacity-50"
+                              className="rounded-lg p-2 text-red-600 transition hover:bg-red-50 disabled:opacity-50"
                               title="Delete note"
                             >
                               <Trash2 size={17} />
@@ -321,14 +423,17 @@ const AdminNotesPage = () => {
           {pagination.totalPages > 1 && (
             <div className="flex items-center justify-between border-t border-gray-200 px-6 py-4">
               <p className="text-sm text-gray-500">
-                Page {pagination.page} of {pagination.totalPages}
+                Page {pagination.page} of{" "}
+                {pagination.totalPages}
               </p>
 
               <div className="flex gap-2">
                 <button
                   type="button"
                   disabled={page <= 1}
-                  onClick={() => setPage((prev) => prev - 1)}
+                  onClick={() =>
+                    setPage((prev) => prev - 1)
+                  }
                   className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Previous
@@ -336,8 +441,12 @@ const AdminNotesPage = () => {
 
                 <button
                   type="button"
-                  disabled={page >= pagination.totalPages}
-                  onClick={() => setPage((prev) => prev + 1)}
+                  disabled={
+                    page >= pagination.totalPages
+                  }
+                  onClick={() =>
+                    setPage((prev) => prev + 1)
+                  }
                   className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Next

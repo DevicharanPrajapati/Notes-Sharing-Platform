@@ -43,11 +43,11 @@ function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white">
+    <nav className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/80 backdrop-blur-md transition-all">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center">
+          <Link to="/" className="flex items-center transition hover:opacity-90">
             <img
               src={Logo}
               alt="NoteHub Logo"
@@ -56,40 +56,50 @@ function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden items-center gap-5 md:flex">
+          <div className="hidden items-center gap-2 md:flex">
             {/* Home */}
             <Link
               to="/"
-              className="flex items-center gap-2 text-sm font-medium text-gray-600 transition hover:text-indigo-600"
+              className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100/80 hover:text-indigo-600"
             >
-              <Home size={18} />
+              <Home size={17} />
               <span>Home</span>
             </Link>
 
             {/* Notes */}
             <Link
               to="/notes"
-              className="flex items-center gap-2 text-sm font-medium text-gray-600 transition hover:text-indigo-600"
+              className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100/80 hover:text-indigo-600"
             >
-              <FileText size={18} />
+              <FileText size={17} />
               <span>Notes</span>
             </Link>
 
             {/* Categories */}
             <Link
               to="/categories"
-              className="flex items-center gap-2 text-sm font-medium text-gray-600 transition hover:text-indigo-600"
+              className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100/80 hover:text-indigo-600"
             >
-              <Folder size={18} />
+              <Folder size={17} />
               <span>Categories</span>
             </Link>
+
+            {/* Admin Panel Link for Admin Users */}
+            {user?.role === "admin" && (
+              <Link
+                to="/admin/dashboard"
+                className="flex items-center gap-1.5 rounded-full bg-purple-50 px-3.5 py-1.5 text-sm font-semibold text-purple-700 transition hover:bg-purple-100 hover:text-purple-800"
+              >
+                <span>Admin Panel</span>
+              </Link>
+            )}
 
             {/* Upload Note */}
             <Link
               to="/notes/upload"
-              className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700"
+              className="ml-2 flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-indigo-500/25 transition hover:from-indigo-500 hover:to-indigo-600 hover:shadow-indigo-500/35 hover:-translate-y-0.5 active:translate-y-0"
             >
-              <Upload size={18} />
+              <Upload size={17} />
               <span>Upload Note</span>
             </Link>
 
@@ -97,13 +107,13 @@ function Navbar() {
             {user ? (
               <Link
                 to="/profile"
-                className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-gray-700 transition hover:bg-gray-100"
+                className="ml-1 flex items-center gap-2.5 rounded-full py-1 pl-1 pr-3 transition hover:bg-slate-100"
               >
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-xs font-bold text-white shadow-sm">
                   {user.name?.charAt(0).toUpperCase()}
                 </div>
 
-                <span className="max-w-24 truncate text-sm font-medium">
+                <span className="max-w-28 truncate text-sm font-medium text-slate-700">
                   {user.name}
                 </span>
               </Link>
@@ -111,10 +121,11 @@ function Navbar() {
               <button
                 type="button"
                 onClick={() => navigate("/login")}
-                className="flex h-9 w-9 items-center justify-center rounded-full text-gray-600 transition hover:bg-gray-100 hover:text-indigo-600"
+                className="ml-2 flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600"
                 title="Login"
               >
-                <User size={21} />
+                <User size={17} />
+                <span>Sign In</span>
               </button>
             )}
           </div>

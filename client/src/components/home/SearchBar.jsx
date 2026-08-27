@@ -43,70 +43,74 @@ function SearchBar() {
   }, [search]);
 
   return (
-    <section className="relative z-20 px-4 py-8 sm:px-6 lg:px-8">
+    <section className="relative z-20 -mt-7 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-3xl">
         <div className="relative">
-          {/* Search Input */}
-          <Search
-            size={20}
-            className="absolute left-4 top-5 text-gray-400"
-          />
+          {/* Search Input Container */}
+          <div className="relative flex items-center">
+            <Search
+              size={20}
+              className="pointer-events-none absolute left-5 text-slate-400"
+            />
 
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search notes, subjects, topics..."
-            className="w-full rounded-xl border border-gray-200 bg-white py-4 pl-12 pr-4 text-sm text-gray-900 shadow-sm outline-none transition placeholder:text-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 sm:text-base"
-          />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search notes, subjects, topics, or study guides..."
+              className="h-14 w-full rounded-2xl border border-slate-200/90 bg-white/95 pl-13 pr-5 text-sm text-slate-800 shadow-lg shadow-slate-200/60 outline-none transition-all placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 sm:text-base"
+            />
+          </div>
 
-          {/* Results */}
+          {/* Results Dropdown */}
           {search.trim() && (
-            <div className="absolute left-0 right-0 top-full mt-2 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
+            <div className="absolute left-0 right-0 top-full mt-2.5 overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 shadow-2xl shadow-slate-200/80 backdrop-blur-md">
               {loading ? (
-                <div className="flex items-center justify-center gap-2 px-5 py-6 text-sm text-gray-500">
+                <div className="flex items-center justify-center gap-2.5 px-5 py-7 text-sm font-medium text-slate-500">
                   <Loader2
-                    size={18}
+                    size={19}
                     className="animate-spin text-indigo-600"
                   />
-                  Searching...
+                  <span>Searching library...</span>
                 </div>
               ) : results.length > 0 ? (
-                <div className="max-h-96 overflow-y-auto">
+                <div className="max-h-96 divide-y divide-slate-100 overflow-y-auto">
                   {results.map((note) => (
                     <Link
                       key={note._id}
                       to={`/notes/${note._id}`}
                       onClick={() => setSearch("")}
-                      className="flex items-center gap-4 border-b border-gray-100 px-5 py-4 transition last:border-b-0 hover:bg-gray-50"
+                      className="flex items-center gap-4 px-5 py-3.5 transition hover:bg-indigo-50/50"
                     >
                       {/* Icon */}
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
-                        <FileText size={19} />
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+                        <FileText size={20} />
                       </div>
 
                       {/* Note information */}
                       <div className="min-w-0 flex-1">
-                        <h3 className="truncate text-sm font-semibold text-gray-900">
+                        <h3 className="truncate text-sm font-semibold text-slate-800">
                           {note.title}
                         </h3>
 
-                        <div className="mt-1 flex flex-wrap gap-x-2 text-xs text-gray-500">
+                        <div className="mt-1 flex flex-wrap items-center gap-x-2 text-xs text-slate-500">
                           {note.subject && (
-                            <span>{note.subject}</span>
+                            <span className="font-medium text-indigo-600">
+                              {note.subject}
+                            </span>
                           )}
 
                           {note.category?.name && (
                             <>
-                              <span>•</span>
+                              <span className="text-slate-300">•</span>
                               <span>{note.category.name}</span>
                             </>
                           )}
                         </div>
 
                         {note.uploadedBy?.name && (
-                          <p className="mt-1 text-xs text-gray-400">
-                            Uploaded by {note.uploadedBy.name}
+                          <p className="mt-0.5 text-xs text-slate-400">
+                            by {note.uploadedBy.name}
                           </p>
                         )}
                       </div>
@@ -114,18 +118,18 @@ function SearchBar() {
                   ))}
                 </div>
               ) : (
-                <div className="px-5 py-8 text-center">
+                <div className="px-5 py-9 text-center">
                   <FileText
-                    size={28}
-                    className="mx-auto text-gray-300"
+                    size={30}
+                    className="mx-auto text-slate-300"
                   />
 
-                  <p className="mt-2 text-sm font-medium text-gray-700">
-                    No notes found
+                  <p className="mt-2 text-sm font-semibold text-slate-700">
+                    No matching notes found
                   </p>
 
-                  <p className="mt-1 text-xs text-gray-400">
-                    Try searching for another subject or topic.
+                  <p className="mt-1 text-xs text-slate-400">
+                    Try searching for another subject or broader keyword.
                   </p>
                 </div>
               )}

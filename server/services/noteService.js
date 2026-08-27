@@ -168,6 +168,13 @@ export const getNotesByUser = async (userId) => {
       },
     },
     {
+      $addFields: {
+        moderationStatus: {
+          $arrayElemAt: ["$moderation.status", 0],
+        },
+      },
+    },
+    {
       $lookup: {
         from: "categories",
         localField: "category",

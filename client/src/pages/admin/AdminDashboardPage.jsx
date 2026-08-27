@@ -43,36 +43,43 @@ const AdminDashboardPage = () => {
       title: "Total Users",
       value: stats.totalUsers || 0,
       icon: Users,
+      iconBg: "bg-blue-50 text-blue-600",
     },
     {
       title: "Total Notes",
       value: stats.totalNotes || 0,
       icon: FileText,
+      iconBg: "bg-indigo-50 text-indigo-600",
     },
     {
       title: "Categories",
       value: stats.totalCategories || 0,
       icon: Folder,
+      iconBg: "bg-purple-50 text-purple-600",
     },
     {
       title: "Downloads",
       value: stats.totalDownloads || 0,
       icon: Download,
+      iconBg: "bg-cyan-50 text-cyan-600",
     },
     {
       title: "Pending Notes",
       value: stats.pendingNotes || 0,
       icon: Clock,
+      iconBg: "bg-amber-50 text-amber-600",
     },
     {
       title: "Approved Notes",
       value: stats.approvedNotes || 0,
       icon: CheckCircle,
+      iconBg: "bg-emerald-50 text-emerald-600",
     },
     {
       title: "Rejected Notes",
       value: stats.rejectedNotes || 0,
       icon: XCircle,
+      iconBg: "bg-rose-50 text-rose-600",
     },
   ];
 
@@ -80,10 +87,12 @@ const AdminDashboardPage = () => {
     <div>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+        <h1 className="font-display text-2xl font-extrabold text-slate-900 sm:text-3xl">
+          System Overview & Metrics
+        </h1>
 
-        <p className="mt-1 text-sm text-gray-500">
-          Manage your NoteSharing platform.
+        <p className="mt-1 text-sm text-slate-500">
+          Real-time metrics, user growth, and note moderation queue status.
         </p>
       </div>
 
@@ -95,21 +104,21 @@ const AdminDashboardPage = () => {
           return (
             <div
               key={card.title}
-              className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
+              className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
                     {card.title}
                   </p>
 
-                  <p className="mt-2 text-2xl font-bold text-gray-900">
+                  <p className="mt-2 font-display text-2xl font-extrabold text-slate-900">
                     {card.value}
                   </p>
                 </div>
 
-                <div className="rounded-xl bg-indigo-50 p-3 text-indigo-600">
-                  <Icon size={21} />
+                <div className={`rounded-xl p-3 shadow-inner ${card.iconBg}`}>
+                  <Icon size={20} />
                 </div>
               </div>
             </div>

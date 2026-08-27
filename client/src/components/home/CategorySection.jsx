@@ -75,15 +75,15 @@ function CategorySection() {
 
         {/* Categories */}
         {!loading && !error && categories.length > 0 && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {categories.slice(0, 4).map((category) => (
               <Link
                 key={category._id}
                 to={`/category/${category.slug}`}
-                className="group rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-indigo-200 hover:shadow-md"
+                className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-300/80 hover:shadow-xl hover:shadow-indigo-500/10"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-lg bg-indigo-50 text-indigo-600">
+                  <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-indigo-50 to-purple-50 text-indigo-600 shadow-inner">
                     {category.image ? (
                       <img
                         src={category.image}
@@ -95,22 +95,26 @@ function CategorySection() {
                     )}
                   </div>
 
-                  <ArrowRight
-                    size={18}
-                    className="text-gray-300 transition group-hover:translate-x-1 group-hover:text-indigo-600"
-                  />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-400 transition-colors duration-200 group-hover:bg-indigo-50 group-hover:text-indigo-600">
+                    <ArrowRight
+                      size={16}
+                      className="transition-transform duration-200 group-hover:translate-x-0.5"
+                    />
+                  </div>
                 </div>
 
-                <h3 className="mt-4 font-semibold text-gray-900">
-                  {category.name}
-                </h3>
+                <div className="mt-5">
+                  <h3 className="text-base font-bold text-slate-800 transition-colors group-hover:text-indigo-600">
+                    {category.name}
+                  </h3>
 
-                <p className="mt-1 text-sm text-gray-500">
-                  {category.notesCount || 0}{" "}
-                  {category.notesCount === 1
-                    ? "Note"
-                    : "Notes"}
-                </p>
+                  <div className="mt-2 flex items-center gap-1.5">
+                    <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600">
+                      {category.notesCount || 0}{" "}
+                      {category.notesCount === 1 ? "note" : "notes"}
+                    </span>
+                  </div>
+                </div>
               </Link>
             ))}
           </div>

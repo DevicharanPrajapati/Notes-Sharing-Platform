@@ -57,6 +57,19 @@ export const SavedNoteProvider = ({ children }) => {
     }
   };
 
+  const checkSavedNote = async (noteId) => {
+  try {
+    const response = await api.get(
+      `/api/saved-note/check/${noteId}`,
+    );
+
+    return response.data.saved;
+  } catch (error) {
+    console.error("Check saved note failed:", error);
+    return false;
+  }
+};
+
   useEffect(() => {
     if (user) {
       fetchSavedNotes();
@@ -71,6 +84,7 @@ export const SavedNoteProvider = ({ children }) => {
     saveNote,
     unsaveNote,
     fetchSavedNotes,
+    checkSavedNote,
   };
 
   return (

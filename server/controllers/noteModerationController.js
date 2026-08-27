@@ -3,6 +3,7 @@ import {
   getPendingNotes,
   approveNote,
   rejectNote,
+  resetModeration,
 } from "../services/noteModerationService.js";
 
 import ApiError from "../utils/ApiError.js";
@@ -30,8 +31,6 @@ export const approveNoteController = asyncHandler(async (req, res) => {
   });
 });
 
-
-
 export const rejectNoteController = asyncHandler(async (req, res) => {
   const { rejectionReason } = req.body;
 
@@ -42,7 +41,7 @@ export const rejectNoteController = asyncHandler(async (req, res) => {
   const moderation = await rejectNote(
     req.params.id,
     req.user._id,
-    rejectionReason
+    rejectionReason,
   );
 
   if (!moderation) {
@@ -52,6 +51,21 @@ export const rejectNoteController = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     message: "Note rejected successfully",
+    moderation,
+  });
+});
+
+
+export const setPendingNoteController = asyncHandler(async (req, res) => {
+  const moderation = await resetModeration(req.params.id);
+
+  if (!moderation) {
+    throw new ApiError(404, "Moderation record not found");
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Note moved to pending successfully",
     moderation,
   });
 });

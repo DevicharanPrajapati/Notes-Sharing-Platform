@@ -203,6 +203,26 @@ export const AdminProvider = ({ children }) => {
     }
   };
 
+const setPendingNote = async (noteId) => {
+  try {
+    setLoading(true);
+    setError(null);
+
+    await api.patch(`/api/admin/notes/${noteId}/pending`);
+
+    await fetchNotes();
+  } catch (error) {
+    const message =
+      error.response?.data?.message ||
+      "Failed to set note as pending";
+
+    setError(message);
+    throw error;
+  } finally {
+    setLoading(false);
+  }
+};
+
   const deleteNote = async (noteId) => {
     try {
       setLoading(true);
@@ -309,6 +329,7 @@ export const AdminProvider = ({ children }) => {
 
         approveNote,
         rejectNote,
+        setPendingNote,
         deleteNote,
 
         addCategory,

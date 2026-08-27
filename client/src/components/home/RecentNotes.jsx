@@ -1,8 +1,9 @@
 import { useEffect } from "react";
-import { ArrowRight, FileText } from "lucide-react";
+import { ArrowRight, FileText, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { useNotes } from "../../context/NoteContext";
+import NoteCard from "../notes/NoteCard";
 
 function RecentNotes() {
   const {
@@ -20,36 +21,37 @@ function RecentNotes() {
   }, []);
 
   return (
-    <section className="bg-white px-4 py-12 sm:px-6 lg:px-8">
+    <section className="px-4 py-14 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         {/* Section Header */}
-        <div className="mb-6 flex items-end justify-between">
+        <div className="mb-8 flex items-end justify-between">
           <div>
-            <p className="text-sm font-semibold text-indigo-600">
-              Recently Added
-            </p>
+            <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-indigo-600">
+              <Sparkles size={14} />
+              <span>Fresh Resources</span>
+            </div>
 
-            <h2 className="mt-1 text-2xl font-bold text-gray-900 sm:text-3xl">
-              Recent Notes
+            <h2 className="mt-1.5 text-2xl font-bold text-slate-900 sm:text-3xl">
+              Recently Added Notes
             </h2>
           </div>
 
           <Link
             to="/notes"
-            className="hidden items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-700 sm:flex"
+            className="hidden items-center gap-1 text-sm font-semibold text-indigo-600 transition hover:text-indigo-700 sm:flex"
           >
-            View All
+            <span>Explore All</span>
             <ArrowRight size={16} />
           </Link>
         </div>
 
         {/* Loading */}
         {loading && (
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map((item) => (
               <div
                 key={item}
-                className="h-48 animate-pulse rounded-xl border border-gray-200 bg-gray-50"
+                className="h-80 animate-pulse rounded-2xl border border-slate-200/80 bg-white"
               />
             ))}
           </div>
@@ -57,7 +59,7 @@ function RecentNotes() {
 
         {/* Error */}
         {!loading && error && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
             {error}
           </div>
         )}
@@ -66,69 +68,25 @@ function RecentNotes() {
         {!loading &&
           !error &&
           (!notes || notes.length === 0) && (
-            <div className="rounded-xl border border-gray-200 bg-gray-50 p-10 text-center">
+            <div className="rounded-2xl border border-slate-200/80 bg-white p-12 text-center shadow-sm">
               <FileText
                 size={36}
-                className="mx-auto text-gray-400"
+                className="mx-auto text-slate-400"
               />
 
-              <p className="mt-3 text-sm text-gray-500">
-                No notes available yet.
+              <p className="mt-3 text-sm text-slate-500">
+                No notes uploaded yet. Be the first to share!
               </p>
             </div>
           )}
 
-        {/* Notes */}
+        {/* Notes Grid */}
         {!loading &&
           !error &&
           notes?.length > 0 && (
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {notes.map((note) => (
-                <div
-                  key={note._id}
-                  className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    {/* Icon */}
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
-                      <FileText size={22} />
-                    </div>
-
-                    {/* Category */}
-                    {note.category?.name && (
-                      <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-                        {note.category.name}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Title */}
-                  <h3 className="mt-5 line-clamp-2 font-semibold text-gray-900">
-                    {note.title}
-                  </h3>
-
-                  {/* Subject */}
-                  {note.subject && (
-                    <p className="mt-2 text-sm text-gray-500">
-                      Subject: {note.subject}
-                    </p>
-                  )}
-
-                  {/* Author */}
-                  <p className="mt-1 text-sm text-gray-500">
-                    Uploaded by{" "}
-                    {note.uploadedBy?.name || "Unknown"}
-                  </p>
-
-                  {/* View */}
-                  <Link
-                    to={`/notes/${note._id}`}
-                    className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-700"
-                  >
-                    View Note
-                    <ArrowRight size={15} />
-                  </Link>
-                </div>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {notes.slice(0, 3).map((note) => (
+                <NoteCard key={note._id} note={note} />
               ))}
             </div>
           )}

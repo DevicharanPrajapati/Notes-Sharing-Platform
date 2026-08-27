@@ -16,8 +16,8 @@ const NotesSearch = ({ search, setSearch }) => {
         type="text"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search notes by title, description..."
-        className="h-12 w-full rounded-xl border border-gray-200 bg-white pl-11 pr-11 text-sm text-gray-900 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+        placeholder="Search notes by title, subject, or description..."
+        className="h-12 w-full rounded-xl border border-slate-200/90 bg-white pl-11 pr-11 text-sm text-slate-800 outline-none transition-all placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
       />
 
       {search && (

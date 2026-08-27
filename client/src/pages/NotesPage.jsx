@@ -99,10 +99,10 @@ const NotesPage = () => {
         <NotesHeader totalNotes={pagination.totalNotes} />
 
         {/* Search + Filter */}
-        <div className="mb-8 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+        <div className="mb-8 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm">
 
           {/* Search */}
-          <div className="mb-3">
+          <div className="mb-4">
             <NotesSearch
               search={search}
               setSearch={handleSearchChange}
@@ -110,49 +110,15 @@ const NotesPage = () => {
           </div>
 
           {/* Filters */}
-          <div className="flex flex-col gap-3 sm:flex-row">
-
-            {/* Category */}
-            <div className="flex-1">
-              <label
-                htmlFor="category"
-                className="mb-2 block text-sm font-semibold text-gray-700"
-              >
-                Category
-              </label>
-
-              <select
-                id="category"
-                value={category}
-                onChange={(e) => handleCategoryChange(e.target.value)}
-                disabled={categoriesLoading}
-                className="h-11 w-full rounded-xl border border-gray-200 bg-white px-4 text-sm text-gray-700 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:bg-gray-50"
-              >
-                <option value="">
-                  {categoriesLoading
-                    ? "Loading categories..."
-                    : "All Categories"}
-                </option>
-
-                {categories
-                  .filter((item) => item.isActive)
-                  .map((item) => (
-                    <option key={item._id} value={item._id}>
-                      {item.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
-
-            {/* Subject */}
-            <div className="flex-1">
-              <NotesFilter
-                subject={subject}
-                setSubject={handleSubjectChange}
-                subjects={subjects}
-              />
-            </div>
-          </div>
+          <NotesFilter
+            category={category}
+            setCategory={handleCategoryChange}
+            categories={categories}
+            categoriesLoading={categoriesLoading}
+            subject={subject}
+            setSubject={handleSubjectChange}
+            subjects={subjects}
+          />
 
           {/* Results info */}
           {!loading && (
