@@ -27,7 +27,9 @@ export const approveNote = async (noteId, adminId) => {
       adminId,
       reviewedAt: new Date(),
     },
-    { new: true },
+    {
+      returnDocument: "after",
+    },
   );
 };
 
@@ -234,4 +236,3 @@ export const getAllAdminNotes = async ({
     },
   };
 };
-

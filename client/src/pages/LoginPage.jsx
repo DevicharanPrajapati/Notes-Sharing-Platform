@@ -34,7 +34,9 @@ function Login() {
 
       if (loggedInUser.role === "admin") {
         navigate("/admin/dashboard");
-      } else {
+      }else if(loggedInUser.role === "staff"){
+        navigate("/admin/notes");
+      }else {
         navigate("/");
       }
     } catch (error) {

@@ -60,16 +60,25 @@ function AppRoutes() {
           </Route>
         </Route>
 
-        <Route element={<AdminRoute />}>
+        <Route element={<AdminRoute allowedRoles={["admin", "staff"]} />}>
+          <Route element={<AdminLayout />}>
+            <Route path="/admin/notes" element={<AdminNotesPage />} />
+          </Route>
+        </Route>
+
+        <Route element={<AdminRoute allowedRoles={["admin"]} />}>
           <Route element={<AdminLayout />}>
             <Route
               path="/admin"
               element={<Navigate to="/admin/dashboard" replace />}
             />
+
             <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+
             <Route path="/admin/users" element={<AdminUsersPage />} />
-            <Route path="/admin/notes" element={<AdminNotesPage />} />
+
             <Route path="/admin/categories" element={<AdminCategoriesPage />} />
+
             <Route path="/admin/profile" element={<AdminProfilePage />} />
           </Route>
         </Route>

@@ -106,16 +106,22 @@ const AdminUsersPage = () => {
                     </td>
 
                     {/* Role */}
+                    {/* Role */}
                     <td className="px-6 py-4">
                       <span
                         className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
                           user.role === "admin"
                             ? "bg-purple-50 text-purple-600"
-                            : "bg-gray-100 text-gray-600"
+                            : user.role === "staff"
+                              ? "bg-indigo-50 text-indigo-600"
+                              : "bg-gray-100 text-gray-600"
                         }`}
                       >
                         {user.role === "admin" && <Shield size={13} />}
-                        {user.role}
+                        {user.role === "staff" && <Shield size={13} />}
+                        {user.role === "user" && <User size={13} />}
+
+                        <span className="capitalize">{user.role}</span>
                       </span>
                     </td>
 
@@ -162,19 +168,27 @@ const AdminUsersPage = () => {
                           </button>
                         )}
 
-                        <button
-                          type="button"
-                          onClick={() =>
-                            changeUserRole(
-                              user._id,
-                              user.role === "admin" ? "user" : "admin",
-                            )
-                          }
-                          disabled={loading}
-                          className="rounded-lg px-3 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50 disabled:opacity-50"
-                        >
-                          {user.role === "admin" ? "Make User" : "Make Admin"}
-                        </button>
+                        {user.role === "user" && (
+                          <button
+                            type="button"
+                            onClick={() => changeUserRole(user._id, "staff")}
+                            disabled={loading}
+                            className="rounded-lg px-3 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50 disabled:opacity-50"
+                          >
+                            Make Staff
+                          </button>
+                        )}
+
+                        {user.role === "staff" && (
+                          <button
+                            type="button"
+                            onClick={() => changeUserRole(user._id, "user")}
+                            disabled={loading}
+                            className="rounded-lg px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+                          >
+                            Make User
+                          </button>
+                        )}
 
                         <button
                           type="button"

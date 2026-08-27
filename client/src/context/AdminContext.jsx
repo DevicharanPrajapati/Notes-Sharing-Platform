@@ -1,9 +1,11 @@
 import { createContext, useContext, useState } from "react";
 import api from "../services/api";
+import {useAuth} from "./AuthContext";
 
 const AdminContext = createContext();
 
 export const AdminProvider = ({ children }) => {
+  const { user } = useAuth();
   const [dashboard, setDashboard] = useState(null);
   const [users, setUsers] = useState([]);
   const [notes, setNotes] = useState([]);
@@ -317,6 +319,9 @@ const setPendingNote = async (noteId) => {
         loading,
         error,
 
+        isAdmin: user?.role === "admin",
+        isStaff: user?.role === "staff",
+        
         fetchDashboard,
         fetchUsers,
         fetchNotes,

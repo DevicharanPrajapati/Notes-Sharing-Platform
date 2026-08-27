@@ -9,18 +9,50 @@ import {
   deleteUserController,
 } from "../controllers/adminUserController.js";
 
+import authMiddleware from "../middleware/authMiddleware.js";
+import adminMiddleware from "../middleware/adminMiddleware.js";
+
 const router = express.Router();
 
-router.get("/", getAllUsersController);
+router.get(
+  "/",
+  authMiddleware,
+  adminMiddleware,
+  getAllUsersController,
+);
 
-router.get("/:id", getUserByIdController);
+router.get(
+  "/:id",
+  authMiddleware,
+  adminMiddleware,
+  getUserByIdController,
+);
 
-router.patch("/:id/ban", banUserController);
+router.patch(
+  "/:id/ban",
+  authMiddleware,
+  adminMiddleware,
+  banUserController,
+);
 
-router.patch("/:id/unban", unbanUserController);
+router.patch(
+  "/:id/unban",
+  authMiddleware,
+  adminMiddleware,
+  unbanUserController,
+);
 
-router.patch("/:id/role", updateUserRoleController);
+router.patch(
+  "/:id/role",
+  authMiddleware,
+  adminMiddleware,
+  updateUserRoleController,
+);
 
-router.delete("/:id", deleteUserController);
-
+router.delete(
+  "/:id",
+  authMiddleware,
+  adminMiddleware,
+  deleteUserController,
+);
 export default router;

@@ -65,7 +65,7 @@ export const unbanUserController = asyncHandler(async (req, res) => {
 export const updateUserRoleController = asyncHandler(async (req, res) => {
   const { role } = req.body;
 
-  if (!["user", "admin"].includes(role)) {
+  if (!["user", "staff"].includes(role)) {
     throw new ApiError(400, "Invalid role");
   }
 

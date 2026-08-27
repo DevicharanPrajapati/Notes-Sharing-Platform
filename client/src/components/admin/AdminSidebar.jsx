@@ -1,36 +1,59 @@
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Users, FileText, Folder, User, LogOut, Shield } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  FileText,
+  Folder,
+  User,
+  LogOut,
+  Shield,
+} from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
 const AdminSidebar = () => {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
+
+  const isAdmin = user?.role === "admin";
+  const isStaff = user?.role === "staff";
 
   const links = [
-    {
-      name: "Dashboard",
-      path: "/admin/dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      name: "Users Management",
-      path: "/admin/users",
-      icon: Users,
-    },
-    {
-      name: "Notes Moderation",
-      path: "/admin/notes",
-      icon: FileText,
-    },
-    {
-      name: "Categories",
-      path: "/admin/categories",
-      icon: Folder,
-    },
-    {
-      name: "Admin Profile",
-      path: "/admin/profile",
-      icon: User,
-    },
+    ...(isAdmin
+      ? [
+          {
+            name: "Dashboard",
+            path: "/admin/dashboard",
+            icon: LayoutDashboard,
+          },
+          {
+            name: "Users Management",
+            path: "/admin/users",
+            icon: Users,
+          },
+        ]
+      : []),
+    ...(isAdmin || isStaff
+      ? [
+          {
+            name: "Notes Moderation",
+            path: "/admin/notes",
+            icon: FileText,
+          },
+        ]
+      : []),
+    ...(isAdmin
+      ? [
+          {
+            name: "Categories",
+            path: "/admin/categories",
+            icon: Folder,
+          },
+          {
+            name: "Admin Profile",
+            path: "/admin/profile",
+            icon: User,
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -39,11 +62,27 @@ const AdminSidebar = () => {
         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-600 text-white shadow-sm shadow-purple-500/30">
           <Shield size={18} />
         </div>
-
         <div>
-          <h2 className="text-sm font-bold text-slate-900">Admin Console</h2>
-          <p className="text-xs text-slate-400">NoteHub Administration</p>
+          <h2 className="text-sm font-bold text-slate-900">
+            {isAdmin ? "Admin Console" : "Staff Console"}
+          </h2>
+
+          <p className="text-xs text-slate-400">
+            NoteHub {isAdmin ? "Administration" : "Moderation"}
+          </p>
         </div>
+        
+      </div>
+      <div className="px-6 pb-4">
+        <span
+          className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
+            isAdmin
+              ? "bg-purple-50 text-purple-600"
+              : "bg-indigo-50 text-indigo-600"
+          }`}
+        >
+          {isAdmin ? "Administrator" : "Staff"}
+        </span>
       </div>
 
       <nav className="space-y-1.5 p-4">
